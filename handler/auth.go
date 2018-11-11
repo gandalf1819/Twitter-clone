@@ -1,8 +1,8 @@
 package handler
 
 import (
+	"log"
 	"html/template"
-	"fmt"
 	"net/http"
 )
 
@@ -13,14 +13,24 @@ func Login(w http.ResponseWriter, r *http.Request){
     } else {
         r.ParseForm()
 		
-		
-        fmt.Println("username:", r.Form["username"])
-        fmt.Println("password:", r.Form["password"])
+		//email:= r.Form["email"][0]
+		//password:= r.Form["password"][0]
+
+		//db.t.GetToken()
+		//Cookie part to be written
     }
 }
 
 func Register(w http.ResponseWriter, r *http.Request){
-	db.l.Add("Nikhil", "Nar", "ncn251@nyu.edu", "Rubique@1993")
 
-	fmt.Println("Login values====", db.l)
+	if r.Method == "POST"{
+		r.ParseForm()
+		firstName:=r.Form["first_name"][0]
+		lastName:=r.Form["last_name"][0]
+		email:=r.Form["email"][0]
+		password:=r.Form["password"][0]
+		db.l.Add(firstName, lastName, email, password)
+		log.Println("Login values=======",db.l)
+	}
+	
 }
