@@ -3,7 +3,6 @@ package models
 import (
 	"encoding/hex"
 	"crypto/md5"
-	"log"
 )
 
 type User struct{
@@ -30,7 +29,6 @@ func (l *Login) Add(firstName string, lastName string, email string, password st
 	}
 
 	*l = append(*l, user)
-	log.Println("Login values ====", *l)
 	return user
 	
 }

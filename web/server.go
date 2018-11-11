@@ -14,8 +14,6 @@ func main(){
 	http.HandleFunc("/login/", handler.Login)
 	http.HandleFunc("/register/", handler.Register)
 	
-	
-	
 	if err:= http.ListenAndServe(":9090",nil); err!=nil{
 		log.Fatal("Failed to connect to server:", err)
 	}
