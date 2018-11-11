@@ -23,6 +23,9 @@ func (up *UserPosts)AddPost(userId int,text string) Post{
 	return post
 }
 
+
+
 func IncrementPostId(up UserPosts) int{
 	return len(up) + 1
 }
+

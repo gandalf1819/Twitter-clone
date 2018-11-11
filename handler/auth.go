@@ -34,3 +34,20 @@ func Register(w http.ResponseWriter, r *http.Request){
 	}
 	
 }
+
+func Posts(w http.ResponseWriter, r *http.Request){
+
+	if r.Method == "GET" {
+        t, _ := template.ParseFiles("./views/html/posts.html")
+        t.Execute(w, nil)
+    } else {
+        r.ParseForm()
+		
+		//email:= r.Form["email"][0]
+		//password:= r.Form["password"][0]
+
+		//db.t.GetToken()
+		//Cookie part to be written
+    }
+	
+}

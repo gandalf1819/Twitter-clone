@@ -1,0 +1,106 @@
+
+<html>
+  <head>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="/views/js/posts.js"></script>
+  <link href="/views/css/main.css" rel="stylesheet" id="main-css">
+  </head>
+<body id="LoginForm">
+<div class="container">
+<div class="login-form">
+<div class="main-div">
+    <div class="container">
+      <ul class="nav nav-tabs nav-justified">
+        <li class="active" id="friendsTab"><a onclick="toggleTab(1)">Friends</a></li>
+        <li id="newsFeedTab"><a onclick="toggleTab(2)">Newsfeed</a></li>
+        <li id="statusTab"><a onclick="toggleTab(3)">Status</a></li>
+      </ul>
+      <br>
+    </div>
+    <form id="friendsForm" class="form-wrapper friends-wrapper">
+
+        <div class="form-group">
+            <div class="img-wrapper">
+              <img src="/views/images/user.png" class="img-class img">
+            </div>
+            <div class="label-text text-left">Nikhil Nar</div>
+            <div class="action-button text-right">
+            <button class="button btn btn-success">Follow</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="img-wrapper">
+              <img src="/views/images/user.png" class="img-class img">
+            </div>
+            <div class="label-text text-left">Nikhil Nar</div>
+            <div class="action-button text-right">
+            <button class="button btn btn-success">Follow</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="img-wrapper">
+              <img src="/views/images/user.png" class="img-class img">
+            </div>
+            <div class="label-text text-left">Nikhil Nar</div>
+            <div class="action-button text-right">
+            <button class="button btn btn-success">Follow</button>
+            </div>
+        </div>
+        <div class="forgot">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+
+    </form>
+
+    <form id="newsFeedForm" class="form-wrapper table-responsive">
+
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+              <tr>
+                <th>Firstname</th>
+                <th>Lastname</th>
+                <th>Email</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>John</td>
+                <td>Doe</td>
+                <td>john@example.com</td>
+              </tr>
+              <tr>
+                <td>Mary</td>
+                <td>Moe</td>
+                <td>mary@example.com</td>
+              </tr>
+              <tr>
+                <td>July</td>
+                <td>Dooley</td>
+                <td>july@example.com</td>
+              </tr>
+            </tbody>
+          </table>
+
+    </form>
+
+    <form id="statusForm" class="form-wrapper">
+
+        <div class="form-group">
+            <textarea rows="2" class="form-control" placeholder="Enter your present status"></textarea>
+
+        </div>
+
+        <div class="forgot">
+        </div>
+        <button type="submit" class="btn btn-primary">Post</button>
+
+    </form>
+    </div>
+</div></div></div>
+
+
+</body>
+</html>
