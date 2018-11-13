@@ -1,10 +1,24 @@
 package handler
 
 import (
+	"io/ioutil"
 	"log"
 	"html/template"
 	"net/http"
+	"encoding/json"
 )
+
+type RegisterForm struct{
+	FirstName string
+	LastName string
+	Email string
+	Password string
+}
+
+type ResponseMessage struct{
+	Status int
+	Message string
+}
 
 func Login(w http.ResponseWriter, r *http.Request){
     if r.Method == "GET" {
@@ -22,15 +36,23 @@ func Login(w http.ResponseWriter, r *http.Request){
 }
 
 func Register(w http.ResponseWriter, r *http.Request){
-
 	if r.Method == "POST"{
-		r.ParseForm()
-		firstName:=r.Form["first_name"][0]
-		lastName:=r.Form["last_name"][0]
-		email:=r.Form["email"][0]
-		password:=r.Form["password"][0]
+		var register RegisterForm
+		body, err := ioutil.ReadAll(r.Body)
+		
+		if err !=nil{
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		json.Unmarshal([]byte(body), &register)
+		firstName:=register.FirstName
+		lastName:=register.LastName
+		email:=register.Email
+		password:=register.Password
 		db.l.Add(firstName, lastName, email, password)
-		log.Println("Login values=======",db.l)
+
+		ReturnAPIResponse(w, r, 200, "User Registered Successfully!!")
+		
 	}
 	
 }
@@ -50,4 +72,20 @@ func Posts(w http.ResponseWriter, r *http.Request){
 		//Cookie part to be written
     }
 	
+}
+
+func ReturnAPIResponse(w http.ResponseWriter, r *http.Request, status int, message string){
+	response:=ResponseMessage{
+		Status: status,
+		Message: message,
+	}
+	
+	res,err:= json.Marshal(response)
+	if err !=nil{
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	log.Println("res====",res)
+	w.Header().Set("content-type","application/json")
+	w.Write(res)
 }
