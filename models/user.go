@@ -3,7 +3,6 @@ package models
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"log"
 )
 
 type User struct {
@@ -49,35 +48,31 @@ func (l *Login) GetUserByEmail(email string) string {
 }
 
 func (l *Login) FollowUser(userId int, followerId int) {
-	var user User
-	for _, value := range *l {
+
+	for id, value := range *l {
 		if value.id == userId {
-			user = value
+			(*l)[id].follows = append((*l)[id].follows, followerId)
 			break
 		}
 	}
 
-	user.follows = append(user.follows, followerId)
 }
 
 func (l *Login) UnfollowUser(userId int, followerId int) {
-	var user User
-	for _, value := range *l {
+	for id, value := range *l {
 		if value.id == userId {
-			user = value
-			break
-		}
-	}
-	length := len(user.follows) - 1
-	for id, value := range user.follows {
-		if value == followerId {
-			user.follows[id], user.follows[length] = user.follows[length], user.follows[id]
-			break
-		}
-	}
+			length := len((*l)[id].follows) - 1
+			for index, currentValue := range (*l)[id].follows {
+				if currentValue == followerId {
+					(*l)[id].follows[index], (*l)[id].follows[length] = (*l)[id].follows[length], (*l)[id].follows[id]
+					break
+				}
+			}
 
-	length = length - 1
-	user.follows = user.follows[:length]
+			(*l)[id].follows = (*l)[id].follows[:length]
+			return
+		}
+	}
 }
 
 func (l *Login) GetFollowerSuggestions(userId int) []UserList {
@@ -86,7 +81,6 @@ func (l *Login) GetFollowerSuggestions(userId int) []UserList {
 	userList := make([]UserList, 0)
 
 	for _, user := range *l {
-		log.Println("user===", user)
 		if user.id == userId {
 			userObj = user
 		} else {
@@ -99,8 +93,6 @@ func (l *Login) GetFollowerSuggestions(userId int) []UserList {
 			userList = append(userList, currentUser)
 		}
 	}
-
-	log.Println("userList====", userList)
 
 	for _, userId := range userObj.follows {
 		for _, userListObj := range userList {

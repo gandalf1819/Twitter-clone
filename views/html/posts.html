@@ -6,6 +6,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="/views/js/posts.js"></script>
+  <script src="/views/js/api.js"></script>
   <link href="/views/css/main.css" rel="stylesheet" id="main-css">
 </head>
 
@@ -21,7 +22,7 @@
           </ul>
           <br>
         </div>
-        <form id="friendsForm" class="form-wrapper friends-wrapper">
+        <div id="friendsForm" class="form-wrapper friends-wrapper">
           {{range .Friends}}
           <div class="form-group">
             <div class="img-wrapper">
@@ -30,9 +31,9 @@
             <div class="label-text text-left">{{.FirstName}} {{.LastName}}</div>
             <div class="action-button text-right">
               {{if eq .UserType "Follower"}}
-              <button class="button btn btn-success">UnFollow</button>
+              <button class="button btn btn-success" id="unfollow-button">UnFollow</button>
               {{else}}
-              <button class="button btn btn-success">Follow</button>
+              <button class="button btn btn-success" id="follow-button">Follow</button>
               {{end}}
             </div>
           </div>
@@ -40,7 +41,7 @@
           <div class="forgot">
           </div>
 
-        </form>
+        </div>
 
         <form id="newsFeedForm" class="form-wrapper table-responsive">
 
