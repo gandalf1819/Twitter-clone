@@ -31,9 +31,9 @@
             <div class="label-text text-left">{{.FirstName}} {{.LastName}}</div>
             <div class="action-button text-right">
               {{if eq .UserType "Follower"}}
-              <button class="button btn btn-success" id="unfollow-button">UnFollow</button>
+              <button class="button btn btn-success" onclick="followUser(1,'{{.Id}}','UnFollow',event)">UnFollow</button>
               {{else}}
-              <button class="button btn btn-success" id="follow-button">Follow</button>
+              <button class="button btn btn-success" onclick="followUser(1,'{{.Id}}','Follow',event)">Follow</button>
               {{end}}
             </div>
           </div>

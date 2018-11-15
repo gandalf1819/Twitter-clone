@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"html/template"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -48,7 +49,7 @@ func FollowUser(w http.ResponseWriter, r *http.Request) {
 		user := followsData.UserId
 		follower := followsData.FollowerId
 		db.l.FollowUser(user, follower)
-
+		log.Println("db.l===", db.l)
 		ReturnAPIResponse(w, r, 200, "User Followed successfully!!")
 	}
 }
@@ -67,7 +68,7 @@ func UnfollowUser(w http.ResponseWriter, r *http.Request) {
 		user := followsData.UserId
 		follower := followsData.FollowerId
 		db.l.UnfollowUser(user, follower)
-
+		log.Println("db.l===", db.l)
 		ReturnAPIResponse(w, r, 200, "User UnFollowed successfully!!")
 	}
 }

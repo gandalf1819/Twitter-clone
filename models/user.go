@@ -95,9 +95,9 @@ func (l *Login) GetFollowerSuggestions(userId int) []UserList {
 	}
 
 	for _, userId := range userObj.follows {
-		for _, userListObj := range userList {
+		for id, userListObj := range userList {
 			if userId == userListObj.Id {
-				userListObj.UserType = "Follower"
+				userList[id].UserType = "Follower"
 				break
 			}
 		}
