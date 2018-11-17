@@ -50,7 +50,7 @@ func FollowUser(w http.ResponseWriter, r *http.Request) {
 		follower := followsData.FollowerId
 		db.l.FollowUser(user, follower)
 		log.Println("db.l===", db.l)
-		ReturnAPIResponse(w, r, 200, "User Followed successfully!!")
+		ReturnAPIResponse(w, r, 200, "User Followed successfully!!", make(map[string]string))
 	}
 }
 
@@ -69,6 +69,6 @@ func UnfollowUser(w http.ResponseWriter, r *http.Request) {
 		follower := followsData.FollowerId
 		db.l.UnfollowUser(user, follower)
 		log.Println("db.l===", db.l)
-		ReturnAPIResponse(w, r, 200, "User UnFollowed successfully!!")
+		ReturnAPIResponse(w, r, 200, "User UnFollowed successfully!!", make(map[string]string))
 	}
 }
