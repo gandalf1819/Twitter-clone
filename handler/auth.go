@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 type RegisterForm struct {
@@ -36,16 +38,36 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		email := login.Email
 		password := login.Password
 		user := db.l.GetUserByEmailPassword(email, password)
-		if user != nil {
+		if user.Id != 0 {
 			token := db.t.AddToken(user.Id)
 			body := make(map[string]string)
-			body["token"] = string(token)
+			body["Token"] = string(token)
+			log.Println("db.t=======", db.t)
+			log.Println("db.l===", db.l)
+
+			tokCook := &http.Cookie{
+				Name:    "token",
+				Value:   token,
+				Expires: time.Now().Add(24 * time.Hour),
+				Path:    "/",
+			}
+
+			userCookie := &http.Cookie{
+				Name:    "user_id",
+				Value:   strconv.Itoa(user.Id),
+				Expires: time.Now().Add(24 * time.Hour),
+				Path:    "/",
+			}
+
+			// Set the cookies
+			http.SetCookie(w, tokCook)
+			http.SetCookie(w, userCookie)
+
 			ReturnAPIResponse(w, r, 200, "User LoggedIn Successfully!!", body)
 			return
 		}
-
 		log.Println("db.l===", db.l)
-		ReturnAPIResponse(w, r, 200, "Incorrect User credentials!!", make(map[string]string))
+		ReturnAPIResponse(w, r, 422, "Incorrect User credentials!!", make(map[string]string))
 
 	}
 }

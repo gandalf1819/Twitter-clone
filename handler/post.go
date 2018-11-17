@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type PostsPageData struct {
@@ -21,8 +22,22 @@ type Follow struct {
 func Posts(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "GET" {
+		cookieToken, err := r.Cookie("token")
+		if err != nil || cookieToken.Value == "" {
+			http.Redirect(w, r, "/login/", http.StatusFound)
+			log.Printf("HANDLERS-VALIDATE: Failed & Redirected")
+			return
+		}
+
+		userId, err := db.t.GetUserIdFromToken(cookieToken.Value)
+		if err != nil {
+			http.Redirect(w, r, "/login/", http.StatusFound)
+			log.Printf("HANDLERS-VALIDATE: Failed & Redirected")
+			return
+		}
+
 		postsData := PostsPageData{
-			Friends: db.l.GetFollowerSuggestions(1),
+			Friends: db.l.GetFollowerSuggestions(userId),
 		}
 
 		t, _ := template.ParseFiles("./views/html/posts.html")
@@ -37,7 +52,12 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 
 func FollowUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-
+		userCookie, err := r.Cookie("user_id")
+		if err != nil || userCookie.Value == "" {
+			http.Redirect(w, r, "/login/", http.StatusFound)
+			log.Printf("HANDLERS-VALIDATE: Failed & Redirected")
+			return
+		}
 		var followsData Follow
 		body, err := ioutil.ReadAll(r.Body)
 
@@ -46,7 +66,10 @@ func FollowUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		json.Unmarshal([]byte(body), &followsData)
-		user := followsData.UserId
+		user, err := strconv.Atoi(userCookie.Value)
+		if err != nil {
+			panic(err)
+		}
 		follower := followsData.FollowerId
 		db.l.FollowUser(user, follower)
 		log.Println("db.l===", db.l)
@@ -56,7 +79,12 @@ func FollowUser(w http.ResponseWriter, r *http.Request) {
 
 func UnfollowUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
-
+		userCookie, err := r.Cookie("user_id")
+		if err != nil || userCookie.Value == "" {
+			http.Redirect(w, r, "/login/", http.StatusFound)
+			log.Printf("HANDLERS-VALIDATE: Failed & Redirected")
+			return
+		}
 		var followsData Follow
 		body, err := ioutil.ReadAll(r.Body)
 
@@ -65,7 +93,10 @@ func UnfollowUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		json.Unmarshal([]byte(body), &followsData)
-		user := followsData.UserId
+		user, err := strconv.Atoi(userCookie.Value)
+		if err != nil {
+			panic(err)
+		}
 		follower := followsData.FollowerId
 		db.l.UnfollowUser(user, follower)
 		log.Println("db.l===", db.l)

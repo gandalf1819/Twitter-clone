@@ -3,6 +3,7 @@ package models
 import (
 	"crypto/md5"
 	"encoding/hex"
+	//"log"
 )
 
 type User struct {
@@ -43,14 +44,14 @@ func (l *Login) Add(firstName string, lastName string, email string, password st
 
 }
 
-func (l *Login) GetUserByEmailPassword(email string, password string) *User {
+func (l *Login) GetUserByEmailPassword(email string, password string) User {
 	var userObj User
 	for id, value := range *l {
 		if value.Email == email && value.Password == GetMD5Hash(password) {
 			userObj = (*l)[id]
 		}
 	}
-	return &userObj
+	return userObj
 }
 
 func (l *Login) FollowUser(userId int, followerId int) {
