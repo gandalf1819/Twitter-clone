@@ -3,11 +3,11 @@ package main
 import (
 	"log"
 	"net/http"
+
 	"../handler"
 )
 
-
-func main(){
+func main() {
 
 	log.Println("Attempting to connect to server on port 9090")
 	handler.Init()
@@ -15,11 +15,11 @@ func main(){
 	http.HandleFunc("/login/", handler.Login)
 	http.HandleFunc("/register/", handler.Register)
 	http.HandleFunc("/posts/", handler.Posts)
-	
-	if err:= http.ListenAndServe(":9090",nil); err!=nil{
+	http.HandleFunc("/follow/", handler.FollowUser)
+	http.HandleFunc("/unfollow/", handler.UnfollowUser)
+
+	if err := http.ListenAndServe(":9095", nil); err != nil {
 		log.Fatal("Failed to connect to server:", err)
 	}
-	
-	
 
 }

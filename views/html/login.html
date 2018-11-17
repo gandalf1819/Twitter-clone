@@ -1,14 +1,26 @@
 
 <html>
   <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/views/js/login.js"></script>
+    <script src="/views/js/api.js"></script>
+    <link href="/views/css/main.css" rel="stylesheet" id="main-css"> 
+    <script src="/views/js/toastr.js"></script>
+    <script src="/views/css/toastr.css" rel="stylesheet" type="text/css"></script>
 
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src="/views/js/login.js"></script>
-  <script src="/views/js/api.js"></script>
-  <link href="/views/css/main.css" rel="stylesheet" id="main-css"> 
+    <!--toastr script-->
+    <script type="text/javascript">
+        $(function () {
+            $('#register-button').click(function () {
+                var msg = $('#inputFirstName').val();
+                toastr.success(msg);
+            });
+        });
+    </script>
   </head>
+
 <body id="LoginForm">
 <div class="container">
 <div class="login-form">
@@ -39,7 +51,7 @@
     </form>
 
     <div id="registerForm" class="form-wrapper register-form">
-
+ 
         <div class="form-group">
             <input type="text" class="form-control" id="inputFirstName"  name="first_name" placeholder="First Name">
 
