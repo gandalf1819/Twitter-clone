@@ -74,21 +74,18 @@
 
         </form>
 
-        <form id="statusForm" class="form-wrapper">
-
+        <!--Status-->
+        <div id="statusForm" class="form-wrapper">
           <div class="form-group">
-            <textarea rows="2" class="form-control" placeholder="Enter your present status"></textarea>
-
+            <textarea rows="2" id="status" name="status" class="form-control" placeholder="Enter your present status"></textarea>
+            <div class="action-button text-right">
+              <button class="button btn btn-success" onclick="addPost('{{.Id}}',status)">Post</button>
+            </div>
           </div>
 
-          <div class="forgot">
-          </div>
-          <button type="submit" class="btn btn-primary">Post</button>
-
-        </form>
+        </div>
       </div>
     </div>
-  </div>
   </div>
 
 
