@@ -14,7 +14,8 @@ $(document).ready(function() {
             dataType:'json',
             contentType:"application/json",
             success: function(data) {
-               // $("#response").html(data);
+                //var msg = $('#inputFirstName').val();
+                toatr.success(data.firstName);
             },
         });
     });
