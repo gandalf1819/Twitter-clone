@@ -22,8 +22,6 @@
           </ul>
           <br>
         </div>
-
-        <!--Friends-->
         <div id="friendsForm" class="form-wrapper friends-wrapper">
           {{range .Friends}}
           <div class="form-group">
@@ -33,9 +31,9 @@
             <div class="label-text text-left">{{.FirstName}} {{.LastName}}</div>
             <div class="action-button text-right">
               {{if eq .UserType "Follower"}}
-              <button class="button btn btn-success" onclick="followUser(1,'{{.Id}}','UnFollow',event)">UnFollow</button>
+              <button class="button btn btn-success" onclick="followUser('{{.Id}}','UnFollow',event)">UnFollow</button>
               {{else}}
-              <button class="button btn btn-success" onclick="followUser(1,'{{.Id}}','Follow',event)">Follow</button>
+              <button class="button btn btn-success" onclick="followUser('{{.Id}}','Follow',event)">Follow</button>
               {{end}}
             </div>
           </div>
@@ -45,7 +43,6 @@
 
         </div>
 
-        <!--NewsFeed-->
         <form id="newsFeedForm" class="form-wrapper table-responsive">
 
           <table class="table table-striped table-bordered table-hover">
@@ -85,10 +82,10 @@
               <button class="button btn btn-success" onclick="addPost('{{.Id}}',status)">Post</button>
             </div>
           </div>
-          
+
+        </div>
       </div>
     </div>
-  </div>
   </div>
 
 
