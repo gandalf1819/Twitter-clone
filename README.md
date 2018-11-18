@@ -26,5 +26,5 @@ Mini-twitter provides the following features in the application.
 ---
 
 ## Team
-* Nikhil Nar (ncn252)
+* Nikhil Nar (ncn251)
 * Chinmay Wyawahare (cnw282)
