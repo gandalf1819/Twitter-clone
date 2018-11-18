@@ -6,8 +6,10 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="/views/js/posts.js"></script>
+  <script src="/views/js/toastr.js"></script>
   <script src="/views/js/api.js"></script>
   <link href="/views/css/main.css" rel="stylesheet" id="main-css">
+  <link href="/views/css/toastr.css" rel="stylesheet" id="main-css">
 </head>
 
 <body id="LoginForm">
@@ -74,14 +76,15 @@
 
         </form>
 
-        <!--Status-->
         <div id="statusForm" class="form-wrapper">
+
           <div class="form-group">
-            <textarea rows="2" id="status" name="status" class="form-control" placeholder="Enter your present status"></textarea>
-            <div class="action-button text-right">
-              <button class="button btn btn-success" onclick="addPost('{{.Id}}',status)">Post</button>
-            </div>
+            <textarea rows="2" id="status" class="form-control" placeholder="What's on your mind?"></textarea>
           </div>
+
+          <div class="forgot">
+          </div>
+          <button type="submit" class="btn btn-primary" onclick="addPost()">Post</button>
 
         </div>
       </div>

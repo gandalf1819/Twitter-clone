@@ -14,11 +14,6 @@ type PostsPageData struct {
 	Friends []models.UserList
 }
 
-type PostData struct {
-	UserId int
-	Text   string
-}
-
 type Follow struct {
 	UserId     int
 	FollowerId int
@@ -48,22 +43,33 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 		t, _ := template.ParseFiles("./views/html/posts.html")
 		t.Execute(w, postsData)
 
-	} else {
-		r.ParseForm()
+	} else if r.Method == "POST" {
+		type Status struct {
+			Status string
+		}
+		var statusMessage Status
 
-		var post PostData
+		userCookie, err := r.Cookie("user_id")
+		if err != nil || userCookie.Value == "" {
+			http.Redirect(w, r, "/login/", http.StatusFound)
+			log.Printf("HANDLERS-VALIDATE: Failed & Redirected")
+			return
+		}
+
 		body, err := ioutil.ReadAll(r.Body)
 
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		json.Unmarshal([]byte(body), &post)
-		user := post.UserId
-		status := post.Text
-		//used to post data
+		json.Unmarshal([]byte(body), &statusMessage)
+		user, err := strconv.Atoi(userCookie.Value)
+		if err != nil {
+			panic(err)
+		}
+		text := statusMessage.Status
 
-		db.up.AddPost(user, status)
+		db.up.AddPost(user, text)
 		log.Println("db.up===", db.up)
 		ReturnAPIResponse(w, r, 200, "Status shared successfully!!", make(map[string]string))
 	}
