@@ -151,12 +151,12 @@ func (l *Login) GetFollowerPosts(userId int, up *UserPosts) []PostsList {
 
 	for _, user := range userListObj {
 		for _, userPostsObj := range *up {
-			if user.Id == userPostsObj.userId {
+			if user.Id == userPostsObj.UserId {
 				var postListObj = PostsList{
 					Id:        user.Id,
 					FirstName: user.FirstName,
 					LastName:  user.LastName,
-					Post:      userPostsObj.text,
+					Post:      userPostsObj.Text,
 				}
 				posts = append(posts, postListObj)
 			}

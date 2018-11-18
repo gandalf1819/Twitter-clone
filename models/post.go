@@ -1,9 +1,9 @@
 package models
 
 type Post struct {
-	id     int
-	userId int
-	text   string
+	Id     int
+	UserId int
+	Text   string
 }
 
 type UserPosts []Post
@@ -14,9 +14,9 @@ func NewUserPosts() UserPosts {
 
 func (up *UserPosts) AddPost(userId int, text string) Post {
 	post := Post{
-		id:     IncrementPostId(*up),
-		userId: userId,
-		text:   text,
+		Id:     IncrementPostId(*up),
+		UserId: userId,
+		Text:   text,
 	}
 	*up = append(*up, post)
 
