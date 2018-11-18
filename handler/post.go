@@ -1,13 +1,14 @@
 package handler
 
 import (
-	"../models"
 	"encoding/json"
 	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
+
+	"../models"
 )
 
 type PostsPageData struct {
