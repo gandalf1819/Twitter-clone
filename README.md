@@ -22,6 +22,10 @@ Mini-twitter provides the following features in the application.
 ## Project Schema
 
 mini-twitter
+	|--handler
+
+
+mini-twitter
     |-- handler
     |	`-- auth.go --> authentication module, allows user registration and login portal.
     |	`-- init.go --> initialization module, initializes the login, token and post models.
