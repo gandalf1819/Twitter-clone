@@ -93,3 +93,40 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+func LogoutUser(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "DELETE" {
+		cookieToken, err := r.Cookie("token")
+		if err != nil || cookieToken.Value == "" {
+			http.Redirect(w, r, "/login/", http.StatusFound)
+			log.Printf("HANDLERS-VALIDATE: Failed & Redirected")
+			return
+		}
+
+		db.t.UnsetToken(cookieToken.Value)
+		log.Println("db.t====", db.t)
+
+		tokCook := &http.Cookie{
+			Name:    "token",
+			Value:   "",
+			Expires: time.Now().Add(-100 * time.Hour),
+			MaxAge:  -1,
+			Path:    "/",
+		}
+
+		userCookie := &http.Cookie{
+			Name:    "user_id",
+			Value:   "",
+			Expires: time.Now().Add(-100 * time.Hour),
+			MaxAge:  -1,
+			Path:    "/",
+		}
+
+		// Set the cookies
+		http.SetCookie(w, tokCook)
+		http.SetCookie(w, userCookie)
+		ReturnAPIResponse(w, r, 200, "User Logged out successfully!!", make(map[string]string))
+
+	}
+
+}

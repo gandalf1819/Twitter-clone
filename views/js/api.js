@@ -94,3 +94,21 @@ function addPost() {
         },
     });
 }
+
+function logout() {
+    var url = "http://localhost:9090/logout/"
+    $.ajax({
+        url: url,
+        method: "DELETE",
+        dataType: 'json',
+        contentType: "application/json",
+        success: function (data) {
+            if (data.Status == 200) {
+                toastr.success(data.Message);
+                location.href = "http://localhost:9090/login/";
+            } else {
+                toastr.error(data.Message)
+            }
+        },
+    });
+}

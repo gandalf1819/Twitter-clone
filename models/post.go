@@ -23,10 +23,6 @@ func (up *UserPosts) AddPost(userId int, text string) Post {
 	return post
 }
 
-func (up *UserPosts) GetAllPosts(userId int, l *Login) {
-
-}
-
 func IncrementPostId(up UserPosts) int {
 	return len(up) + 1
 }

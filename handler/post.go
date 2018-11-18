@@ -12,6 +12,7 @@ import (
 
 type PostsPageData struct {
 	Friends []models.UserList
+	Posts   []models.PostsList
 }
 
 type Follow struct {
@@ -38,7 +39,9 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 
 		postsData := PostsPageData{
 			Friends: db.l.GetFollowerSuggestions(userId),
+			Posts:   db.l.GetFollowerPosts(userId, &db.up),
 		}
+		log.Println("Posts=======", postsData.Posts)
 
 		t, _ := template.ParseFiles("./views/html/posts.html")
 		t.Execute(w, postsData)
