@@ -21,10 +21,26 @@ Mini-twitter provides the following features in the application.
 
 ## Project Schema
 
-
+mini-twitter
+    |-- handler
+    |	`-- auth.go --> authentication module, allows user registration and login portal.
+    |	`-- init.go --> initialization module, initializes the login, token and post models.
+    |	`-- post.go --> config for post module, implementation of post, follow and unfollow functionality.
+    |	`-- response.go --> returns API response to user.
+    |-- models
+    |   `-- post.go   --> post model, defines post module features.
+    |   `-- token.go --> token validity duration, hash difficulties, etc.
+    |   `-- user.go --> user model, defines user module features.
+	|--views
+	|	|--css
+	|	|--html
+	|	|--images
+	|	|--js
+	|--web
+		`--server.go --> build target (the code that actually runs the server)
 
 ---
 
 ## Team
-* Nikhil Nar (ncn252)
+* Nikhil Nar (ncn251)
 * Chinmay Wyawahare (cnw282)
