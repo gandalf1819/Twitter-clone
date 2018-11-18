@@ -1,10 +1,33 @@
 
 function registerUser() {
+
+    var firstName = document.getElementById("inputFirstName").value;
+    var lastName = document.getElementById("inputLastName").value;
+    var email = document.getElementById("inputRegisterEmail").value;
+    var password = document.getElementById("inputRegisterPassword").value;
+
+    if (!firstName) {
+        toastr.error("Please enter First Name!")
+        return
+    }
+    if (!lastName) {
+        toastr.error("Please enter Last Name!")
+        return
+    }
+    if (!email) {
+        toastr.error("Please enter Email!")
+        return
+    }
+    if (!password) {
+        toastr.error("Please enter Password!")
+        return
+    }
+
     var registerData = {
-        "firstName": $("#inputFirstName").val(),
-        "lastName": $("#inputLastName").val(),
-        "email": $("#inputRegisterEmail").val(),
-        "password": $("#inputRegisterPassword").val()
+        "firstName": firstName,
+        "lastName": lastName,
+        "email": email,
+        "password": password
     }
     $.ajax({
         url: "http://localhost:9090/register/",
@@ -44,9 +67,21 @@ function followUser(followerId, action, event) {
 }
 
 function signIn() {
+    var email = document.getElementById("inputLoginEmail").value;
+    var password = document.getElementById("inputLoginPassword").value;
+
+    if (!email) {
+        toastr.error("Please enter Email!")
+        return
+    }
+    if (!password) {
+        toastr.error("Please enter Password!")
+        return
+    }
+
     var data = {
-        "email": document.getElementById("inputLoginEmail").value,
-        "password": document.getElementById("inputLoginPassword").value,
+        "email": email,
+        "password": password,
     }
     var url = "http://localhost:9090/login/";
     $.ajax({
