@@ -21,6 +21,7 @@
             <li class="active" id="friendsTab"><a onclick="toggleTab(1)">Friends</a></li>
             <li id="newsFeedTab"><a onclick="toggleTab(2)">Newsfeed</a></li>
             <li id="statusTab"><a onclick="toggleTab(3)">Status</a></li>
+            <li id="LogoutTab"><a onclick="logout()">Logout</a></li>
           </ul>
           <br>
         </div>
@@ -45,36 +46,14 @@
 
         </div>
 
-        <form id="newsFeedForm" class="form-wrapper table-responsive">
-
-          <table class="table table-striped table-bordered table-hover">
-            <thead>
-              <tr>
-                <th>Firstname</th>
-                <th>Lastname</th>
-                <th>Email</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>John</td>
-                <td>Doe</td>
-                <td>john@example.com</td>
-              </tr>
-              <tr>
-                <td>Mary</td>
-                <td>Moe</td>
-                <td>mary@example.com</td>
-              </tr>
-              <tr>
-                <td>July</td>
-                <td>Dooley</td>
-                <td>july@example.com</td>
-              </tr>
-            </tbody>
-          </table>
-
-        </form>
+        <div id="newsFeedForm" class="form-wrapper table-responsive">
+          {{range .Posts}}
+          <div class="label-text text-left">
+            <strong>{{.FirstName}} {{.LastName}}</strong>
+          </div>
+          <div class="label-text text-left">- {{.Post}}</div>
+          {{end}}
+        </div>
 
         <div id="statusForm" class="form-wrapper">
 
@@ -87,6 +66,8 @@
           <button type="submit" class="btn btn-primary" onclick="addPost()">Post</button>
 
         </div>
+
+
       </div>
     </div>
   </div>

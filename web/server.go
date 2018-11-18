@@ -16,6 +16,7 @@ func main() {
 	http.HandleFunc("/posts/", handler.Posts)
 	http.HandleFunc("/follow/", handler.FollowUser)
 	http.HandleFunc("/unfollow/", handler.UnfollowUser)
+	http.HandleFunc("/logout/", handler.LogoutUser)
 
 	if err := http.ListenAndServe(":9090", nil); err != nil {
 		log.Fatal("Failed to connect to server:", err)
