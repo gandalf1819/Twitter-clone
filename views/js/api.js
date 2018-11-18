@@ -10,15 +10,15 @@ function registerUser() {
         toastr.error("Please enter First Name!")
         return
     }
-    if(!lastName) {
+    if (!lastName) {
         toastr.error("Please enter Last Name!")
         return
     }
-    if(!email) {
+    if (!email) {
         toastr.error("Please enter Email!")
         return
     }
-    if(!password) {
+    if (!password) {
         toastr.error("Please enter Password!")
         return
     }
@@ -70,11 +70,11 @@ function signIn() {
     var email = document.getElementById("inputLoginEmail").value;
     var password = document.getElementById("inputLoginPassword").value;
 
-    if(!email) {
+    if (!email) {
         toastr.error("Please enter Email!")
         return
     }
-    if(!password) {
+    if (!password) {
         toastr.error("Please enter Password!")
         return
     }
@@ -105,7 +105,6 @@ function signIn() {
 
 function addPost() {
     var status = document.getElementById("status").value
-
     if (!status) {
         toastr.error("Please enter status!!")
         return

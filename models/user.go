@@ -23,6 +23,13 @@ type UserList struct {
 	UserType  string
 }
 
+type PostsList struct {
+	Id        int
+	FirstName string
+	LastName  string
+	Post      string
+}
+
 type Login []User
 
 func NewLogin() Login {
@@ -52,6 +59,30 @@ func (l *Login) GetUserByEmailPassword(email string, password string) User {
 		}
 	}
 	return userObj
+}
+
+func (l *Login) GetUserFollowersById(userId int) []User {
+	var userObj User
+	userListObj := make([]User, 0)
+	for id, value := range *l {
+		if value.Id == userId {
+			userObj = (*l)[id]
+			break
+		}
+	}
+
+	userListObj = append(userListObj, userObj)
+
+	for _, value := range userObj.Follows {
+		for _, user := range *l {
+			if value == user.Id {
+				userListObj = append(userListObj, user)
+				break
+			}
+		}
+	}
+
+	return userListObj
 }
 
 func (l *Login) FollowUser(userId int, followerId int) {
@@ -111,6 +142,28 @@ func (l *Login) GetFollowerSuggestions(userId int) []UserList {
 	}
 
 	return userList
+
+}
+
+func (l *Login) GetFollowerPosts(userId int, up *UserPosts) []PostsList {
+	posts := make([]PostsList, 0)
+	userListObj := l.GetUserFollowersById(userId)
+
+	for _, user := range userListObj {
+		for _, userPostsObj := range *up {
+			if user.Id == userPostsObj.userId {
+				var postListObj = PostsList{
+					Id:        user.Id,
+					FirstName: user.FirstName,
+					LastName:  user.LastName,
+					Post:      userPostsObj.text,
+				}
+				posts = append(posts, postListObj)
+			}
+		}
+	}
+
+	return posts
 
 }
 

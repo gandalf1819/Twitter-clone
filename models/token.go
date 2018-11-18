@@ -27,6 +27,10 @@ func (t Token) AddToken(userId int) string {
 	return token
 }
 
+func (t Token) UnsetToken(token string) {
+	delete(t, token)
+}
+
 //Generate 16 digit random numbers which is used as a token
 func GenerateToken() string {
 	letterBytes := "abcdefghijklmnopqrstuvwxyz"
