@@ -155,6 +155,8 @@ func TestGetFollowerPosts(t *testing.T) {
 
 	// Get Nikhil's newsfeed
 	nikPosts := db.l.GetFollowerPosts(1, &db.up)
+	postsMap["Nikhil"] = 0
+	postsMap["Chinmay"] = 0
 
 	for _, value := range nikPosts {
 		if value.Id == 1 {
@@ -164,20 +166,9 @@ func TestGetFollowerPosts(t *testing.T) {
 		}
 	}
 
-	// Get Chinmay's newsfeed
-	cnwPosts := db.l.GetFollowerPosts(2, &db.up)
-
-	for _, value := range cnwPosts {
-		if value.Id == 1 {
-			postsMap["Nikhil"] = 1
-		} else if value.Id == 2 {
-			postsMap["Chinmay"] = 1
-		}
-	}
-
 	for key, value := range postsMap {
 		if value != 1 {
-			t.Errorf("%v failed to add post", key)
+			t.Errorf("%v post was not found in Nikhil's newsfeed", key)
 		}
 
 	}

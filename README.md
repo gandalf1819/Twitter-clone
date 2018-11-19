@@ -34,9 +34,6 @@ mini-twitter
 		|--css
 			|-- main.css --> stylesheet for mini-twitter
 			|-- toastr.css --> stylesheet for toastr functionality
-			|-- toastr.js.map
-			|-- toastr.min.css
-			|-- toastr.min.js
 		|--html
 			|-- login.html --> homepage containing user login and user registration features
 			|-- posts.html --> posts page containing friends, newsfeed and posts features
@@ -57,9 +54,13 @@ Go to the mini-twitter folder and in the terminal run the following command:
 
 ./runBackendServer.sh
 
+The PORT property can be changed in the runBackendServer.sh file.
+
 Open you web browser and go to the following address:
 
 https://localhost:9090/login
+
+Use the same port that is defined in the runBackendServer.sh file.
 
 ---
 
