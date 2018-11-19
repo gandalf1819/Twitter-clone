@@ -1,8 +1,6 @@
 ## Mini Twitter
 ---
 
-## About
-
 Mini twitter is a simple web application, comprised of a web server written in Go. For stage 1 of this project, instead of using a database, we are keeping everything in memory. 
 
 ---
