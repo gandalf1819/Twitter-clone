@@ -1,10 +1,11 @@
 package handler
 
 import (
-	"./handler"
-	"./models"
 	"log"
 	"testing"
+
+	"./handler"
+	"./models"
 )
 
 type database struct {
@@ -89,7 +90,6 @@ func TestFollowUser(t *testing.T) {
 
 	}
 	log.Println("After test case 2, Login Object =", db.l)
-
 }
 
 func TestUnFollowUser(t *testing.T) {
@@ -104,14 +104,12 @@ func TestUnFollowUser(t *testing.T) {
 		if value.Id == 3 {
 			unFollowerMap[value.FirstName] = 1
 		}
-
 	}
 
 	for key, value := range unFollowerMap {
 		if value != 0 {
 			t.Errorf("Nikhil failed to unfollow %v", key)
 		}
-
 	}
 	log.Println("After test case 3, Login Object =", db.l)
 
@@ -148,5 +146,42 @@ func TestPosts(t *testing.T) {
 	}
 	log.Println("After test case 4, Login Object =", db.l)
 	log.Println("After test case 4, Posts Object =", db.up)
+
+}
+
+func TestGetFollowerPosts(t *testing.T) {
+	log.Println("EXECUTING TestGetFollowerPosts TEST CASE")
+	postsMap := make(map[string]int)
+
+	// Get Nikhil's newsfeed
+	nikPosts := db.l.GetFollowerPosts(1, &db.up)
+
+	for _, value := range nikPosts {
+		if value.Id == 1 {
+			postsMap["Nikhil"] = 1
+		} else if value.Id == 2 {
+			postsMap["Chinmay"] = 1
+		}
+	}
+
+	// Get Chinmay's newsfeed
+	cnwPosts := db.l.GetFollowerPosts(2, &db.up)
+
+	for _, value := range cnwPosts {
+		if value.Id == 1 {
+			postsMap["Nikhil"] = 1
+		} else if value.Id == 2 {
+			postsMap["Chinmay"] = 1
+		}
+	}
+
+	for key, value := range postsMap {
+		if value != 1 {
+			t.Errorf("%v failed to add post", key)
+		}
+
+	}
+	log.Println("After test case 5, Login Object =", db.l)
+	log.Println("After test case 5, Posts Object =", db.up)
 
 }
