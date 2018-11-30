@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package authpb;
+
+message AuthToken { map<string, int32> Token = 1; }
+
+message InitToken {}
+
+message AuthTokenName { string TokenName = 1; }
+
+message AuthTokenValue { int32 TokenValue = 1; }
+
+message UserId { int32 User = 1; }
+
+message Status { bool ResponseStatus = 1; }
+
+service AuthTokenService {
+  rpc GetUserIdFromToken(AuthTokenName) returns (AuthTokenValue) {};
+  rpc AddToken(UserId) returns (AuthTokenName) {};
+  rpc UnsetToken(AuthTokenName) returns (Status) {};
+  rpc GenerateToken(InitToken) returns (AuthTokenName) {};
+}
