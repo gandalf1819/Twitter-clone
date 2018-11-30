@@ -58,6 +58,7 @@ func (s *Server) AddToken(ctx context.Context, userId *authpb.UserId) (*authpb.A
 func (*Server) UnsetToken(ctx context.Context, tokName *authpb.AuthTokenName) (*authpb.Status, error) {
 	status := &authpb.Status{}
 	delete(db.t.Token, tokName.TokenName)
+	status.ResponseStatus = true
 	log.Println("Token ", tokName.TokenName, " deleted successfully")
 	log.Println("TokenDB = ", db.t.Token)
 	return status, nil

@@ -1,14 +1,15 @@
 package handler
 
 import (
+	"../models"
+	"../services/auth/authpb"
+	"context"
 	"encoding/json"
 	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
-
-	"../models"
 )
 
 type PostsPageData struct {
@@ -31,16 +32,21 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		userId, err := db.t.GetUserIdFromToken(cookieToken.Value)
+		tokName := &authpb.AuthTokenName{
+			TokenName: cookieToken.Value,
+		}
+
+		userId, err := con.GetAuthTokenClient().GetUserIdFromToken(context.Background(), tokName)
 		if err != nil {
 			http.Redirect(w, r, "/login/", http.StatusFound)
 			log.Printf("HANDLERS-VALIDATE: Failed & Redirected")
+			log.Println("Error received from Auth Service =", err)
 			return
 		}
 
 		postsData := PostsPageData{
-			Friends: db.l.GetFollowerSuggestions(userId),
-			Posts:   db.l.GetFollowerPosts(userId, &db.up),
+			Friends: db.l.GetFollowerSuggestions(int(userId.TokenValue)),
+			Posts:   db.l.GetFollowerPosts(int(userId.TokenValue), &db.up),
 		}
 		log.Println("Posts=======", postsData.Posts)
 
