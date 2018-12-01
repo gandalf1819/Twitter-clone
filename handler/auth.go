@@ -1,6 +1,9 @@
 package handler
 
 import (
+	"../services/auth/authpb"
+	"../services/user/userpb"
+	"context"
 	"encoding/json"
 	"html/template"
 	"io/ioutil"
@@ -37,24 +40,42 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		json.Unmarshal([]byte(body), &login)
 		email := login.Email
 		password := login.Password
-		user := db.l.GetUserByEmailPassword(email, password)
+		
+		loginDetails := &userpb.LoginDetails{
+			Email:    email,
+			Password: password,
+		}
+		user, err := con.GetUserClient().GetUserByEmailPassword(context.Background(), loginDetails)
+		if err != nil {
+			ReturnAPIResponse(w, r, 422, "Error occured while login. Contact your system admin for more details!!", make(map[string]string))
+			log.Println("Error received from User Service =", err)
+			return
+		}
 		if user.Id != 0 {
-			token := db.t.AddToken(user.Id)
+			
+			userId := &authpb.UserId{
+				User: int32(user.Id),
+			}
 			body := make(map[string]string)
-			body["Token"] = string(token)
-			log.Println("db.t=======", db.t)
-			log.Println("db.l===", db.l)
+			token, err := con.GetAuthTokenClient().AddToken(context.Background(), userId)
+			if err != nil {
+				ReturnAPIResponse(w, r, 422, "Error occured while login. Contact your system admin for more details!!", body)
+				log.Println("Error received from Auth Service =", err)
+				return
+			}
+
+			body["Token"] = token.TokenName
 
 			tokCook := &http.Cookie{
 				Name:    "token",
-				Value:   token,
+				Value:   token.TokenName,
 				Expires: time.Now().Add(24 * time.Hour),
 				Path:    "/",
 			}
 
 			userCookie := &http.Cookie{
 				Name:    "user_id",
-				Value:   strconv.Itoa(user.Id),
+				Value:   strconv.Itoa(int(user.Id)),
 				Expires: time.Now().Add(24 * time.Hour),
 				Path:    "/",
 			}
@@ -66,7 +87,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			ReturnAPIResponse(w, r, 200, "User LoggedIn Successfully!!", body)
 			return
 		}
-		log.Println("db.l===", db.l)
 		ReturnAPIResponse(w, r, 422, "Incorrect User credentials!!", make(map[string]string))
 
 	}
@@ -86,8 +106,20 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		lastName := register.LastName
 		email := register.Email
 		password := register.Password
-		db.l.Add(firstName, lastName, email, password)
-		log.Println("db.l===", db.l)
+		
+		userParams := &userpb.AddUserParameters{
+			FirstName: firstName,
+			LastName:  lastName,
+			Email:     email,
+			Password:  password,
+		}
+		_, err = con.GetUserClient().Add(context.Background(), userParams)
+		if err != nil {
+			ReturnAPIResponse(w, r, 422, "Error occured while login. Contact your system admin for more details!!", make(map[string]string))
+			log.Println("Error received from User Service =", err)
+			return
+		}
+
 		ReturnAPIResponse(w, r, 200, "User Registered Successfully!!", make(map[string]string))
 
 	}
@@ -103,8 +135,16 @@ func LogoutUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		db.t.UnsetToken(cookieToken.Value)
-		log.Println("db.t====", db.t)
+		tokName := &authpb.AuthTokenName{
+			TokenName: cookieToken.Value,
+		}
+
+		status, err := con.GetAuthTokenClient().UnsetToken(context.Background(), tokName)
+		if err != nil || !status.ResponseStatus {
+			ReturnAPIResponse(w, r, 422, "Error occured while logout. Contact your system admin for more details!!", make(map[string]string))
+			log.Println("Error received from Auth Service =", err)
+			return
+		}
 
 		tokCook := &http.Cookie{
 			Name:    "token",
