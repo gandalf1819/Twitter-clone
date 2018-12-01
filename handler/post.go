@@ -4,6 +4,7 @@ import (
 	"../models"
 	"../services/auth/authpb"
 	"../services/post/postpb"
+	"../services/user/userpb"
 	"context"
 	"encoding/json"
 	"html/template"
@@ -14,7 +15,7 @@ import (
 )
 
 type PostsPageData struct {
-	Friends []models.UserList
+	Friends []*userpb.UserListFields
 	Posts   []models.PostsList
 }
 
@@ -45,8 +46,20 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		user := &userpb.UserId{
+			Id: int32(userId.TokenValue),
+		}
+
+		friendLists, err := con.GetUserClient().GetFollowerSuggestions(context.Background(), user)
+		if err != nil {
+			log.Println("Error received from User Service =", err)
+			friendLists = &userpb.UserList{
+				List: make([]*userpb.UserListFields, 0),
+			}
+		}
+
 		postsData := PostsPageData{
-			Friends: db.l.GetFollowerSuggestions(int(userId.TokenValue)),
+			Friends: friendLists.List,
 			Posts:   db.l.GetFollowerPosts(int(userId.TokenValue), &db.up),
 		}
 		log.Println("Posts=======", postsData.Posts)
@@ -117,7 +130,17 @@ func FollowUser(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 		follower := followsData.FollowerId
-		db.l.FollowUser(user, follower)
+		//db.l.FollowUser(user, follower)
+		fp := &userpb.FollowerParameters{
+			UserId:     int32(user),
+			FollowerId: int32(follower),
+		}
+		_, err = con.GetUserClient().FollowUser(context.Background(), fp)
+		if err != nil {
+			ReturnAPIResponse(w, r, 422, "Error occured while following a friend. Contact your system admin for more details!!", make(map[string]string))
+			log.Println("Error received from User Service =", err)
+			return
+		}
 		log.Println("db.l===", db.l)
 		ReturnAPIResponse(w, r, 200, "User Followed successfully!!", make(map[string]string))
 	}
@@ -144,7 +167,17 @@ func UnfollowUser(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 		follower := followsData.FollowerId
-		db.l.UnfollowUser(user, follower)
+		//db.l.UnfollowUser(user, follower)
+		fp := &userpb.FollowerParameters{
+			UserId:     int32(user),
+			FollowerId: int32(follower),
+		}
+		status, err := con.GetUserClient().UnfollowUser(context.Background(), fp)
+		if err != nil || !status.ResponseStatus {
+			ReturnAPIResponse(w, r, 422, "Error occured while unfollowing a friend. Contact your system admin for more details!!", make(map[string]string))
+			log.Println("Error received from User Service =", err)
+			return
+		}
 		log.Println("db.l===", db.l)
 		ReturnAPIResponse(w, r, 200, "User UnFollowed successfully!!", make(map[string]string))
 	}

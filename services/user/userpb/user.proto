@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package userpb;
+
+message User{
+    int32 Id = 1;
+    string FirstName = 2;
+    string LastName = 3;
+    string Email = 4;
+    string Password = 5;
+    repeated int32 Follows = 6;
+}
+
+message UserListFields{
+	int32 Id = 1;
+	string FirstName = 2;
+	string LastName  = 3;
+	string UserType = 4; 
+ }
+
+ message UserList{
+     repeated UserListFields List = 1;
+ }
+
+message Login{
+    repeated User Users = 1;
+}
+
+message AddUserParameters{
+    string FirstName = 1;
+    string LastName = 2;
+    string Email = 3;
+    string Password = 4;   
+}
+
+message LoginDetails{
+    string Email = 1;
+    string Password = 2;
+}
+
+message UserId{
+    int32 Id = 1;
+}
+
+message FollowerParameters{
+    int32 UserId = 1;
+    int32 FollowerId = 2;
+}
+
+message Status{
+    bool ResponseStatus = 1;
+}
+
+service UserService {
+    rpc Add(AddUserParameters) returns (User) {};
+    rpc GetUserByEmailPassword(LoginDetails) returns (User) {};
+    rpc FollowUser(FollowerParameters) returns (Status) {};
+    rpc UnfollowUser(FollowerParameters) returns (Status) {};
+    rpc GetFollowerSuggestions(UserId) returns (UserList) {};
+  }
