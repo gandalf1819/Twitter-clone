@@ -35,6 +35,22 @@ func (*Server) AddPost(ctx context.Context, postDetails *postpb.PostText) (*post
 	return post, nil
 }
 
+func (*Server) GetFollowerPosts(ctx context.Context, users *postpb.Users) (*postpb.UserPosts, error) {
+	posts := &postpb.UserPosts{
+		Posts: make([]*postpb.Post, 0),
+	}
+
+	for _, user := range users.Ids {
+		for _, userPostsObj := range up.Posts {
+			if user == userPostsObj.UserId {
+				posts.Posts = append(posts.Posts, userPostsObj)
+			}
+		}
+	}
+
+	return posts, nil
+}
+
 func IncrementPostId() int32 {
 	return int32(len(up.Posts) + 1)
 }

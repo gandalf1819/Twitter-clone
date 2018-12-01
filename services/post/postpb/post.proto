@@ -17,7 +17,12 @@ message PostText{
     string Text = 2;
 }
 
+message Users{
+    repeated int32 Ids = 1;
+}
+
 
 service PostService {
     rpc AddPost(PostText) returns (Post) {};
+    rpc GetFollowerPosts(Users) returns (UserPosts) {};
   }
