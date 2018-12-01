@@ -3,6 +3,7 @@ package handler
 import (
 	"../models"
 	"../services/auth/authpb"
+	"../services/post/postpb"
 	"context"
 	"encoding/json"
 	"html/template"
@@ -80,6 +81,16 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 		text := statusMessage.Status
 
 		db.up.AddPost(user, text)
+		userPost := &postpb.PostText{
+			UserId: int32(user),
+			Text:   text,
+		}
+		_, err = con.GetUserPostClient().AddPost(context.Background(), userPost)
+		if err != nil {
+			ReturnAPIResponse(w, r, 422, "Error occured while adding post. Contact your system admin for more details!!", make(map[string]string))
+			log.Println("Error received from UserPost Service =", err)
+			return
+		}
 		log.Println("db.up===", db.up)
 		ReturnAPIResponse(w, r, 200, "Status shared successfully!!", make(map[string]string))
 	}
