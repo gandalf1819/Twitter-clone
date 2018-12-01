@@ -57,4 +57,5 @@ service UserService {
     rpc FollowUser(FollowerParameters) returns (Status) {};
     rpc UnfollowUser(FollowerParameters) returns (Status) {};
     rpc GetFollowerSuggestions(UserId) returns (UserList) {};
+    rpc GetUserFollowersById(UserId) returns (Login) {};
   }

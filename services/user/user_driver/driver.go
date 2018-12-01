@@ -65,12 +65,15 @@ func (*Server) FollowUser(ctx context.Context, fp *userpb.FollowerParameters) (*
 }
 
 func (*Server) UnfollowUser(ctx context.Context, fp *userpb.FollowerParameters) (*userpb.Status, error) {
+	log.Println("UnfollowUser called =")
 	for id, value := range lo.Users {
 		if value.Id == fp.UserId {
+			log.Println("value =", value)
 			length := len(lo.Users[id].Follows) - 1
+			log.Println("length =", length)
 			for index, currentValue := range lo.Users[id].Follows {
 				if currentValue == fp.FollowerId {
-					lo.Users[id].Follows[index], lo.Users[id].Follows[length] = lo.Users[id].Follows[length], lo.Users[id].Follows[id]
+					lo.Users[id].Follows[index], lo.Users[id].Follows[length] = lo.Users[id].Follows[length], lo.Users[id].Follows[index]
 					break
 				}
 			}
@@ -118,6 +121,33 @@ func (*Server) GetFollowerSuggestions(ctx context.Context, userId *userpb.UserId
 	log.Println("Follower Suggestions for userId ", userId.Id, " =", userList.List)
 
 	return &userList, nil
+}
+
+func (*Server) GetUserFollowersById(ctx context.Context, user *userpb.UserId) (*userpb.Login, error) {
+	var userObj *userpb.User
+	userListObj := &userpb.Login{
+		Users: make([]*userpb.User, 0),
+	}
+
+	for id, value := range lo.Users {
+		if value.Id == user.Id {
+			userObj = lo.Users[id]
+			break
+		}
+	}
+
+	userListObj.Users = append(userListObj.Users, userObj)
+
+	for _, value := range userObj.Follows {
+		for _, user := range lo.Users {
+			if value == user.Id {
+				userListObj.Users = append(userListObj.Users, user)
+				break
+			}
+		}
+	}
+
+	return userListObj, nil
 }
 
 func GetMD5Hash(str string) string {

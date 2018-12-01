@@ -40,7 +40,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		json.Unmarshal([]byte(body), &login)
 		email := login.Email
 		password := login.Password
-		//user := db.l.GetUserByEmailPassword(email, password)
+		
 		loginDetails := &userpb.LoginDetails{
 			Email:    email,
 			Password: password,
@@ -52,7 +52,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if user.Id != 0 {
-			//token := db.t.AddToken(user.Id)
+			
 			userId := &authpb.UserId{
 				User: int32(user.Id),
 			}
@@ -65,8 +65,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			}
 
 			body["Token"] = token.TokenName
-			log.Println("db.t=======", db.t)
-			log.Println("db.l===", db.l)
 
 			tokCook := &http.Cookie{
 				Name:    "token",
@@ -89,7 +87,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			ReturnAPIResponse(w, r, 200, "User LoggedIn Successfully!!", body)
 			return
 		}
-		log.Println("db.l===", db.l)
 		ReturnAPIResponse(w, r, 422, "Incorrect User credentials!!", make(map[string]string))
 
 	}
@@ -109,7 +106,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		lastName := register.LastName
 		email := register.Email
 		password := register.Password
-		db.l.Add(firstName, lastName, email, password)
+		
 		userParams := &userpb.AddUserParameters{
 			FirstName: firstName,
 			LastName:  lastName,
@@ -122,7 +119,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 			log.Println("Error received from User Service =", err)
 			return
 		}
-		log.Println("db.l===", db.l)
+
 		ReturnAPIResponse(w, r, 200, "User Registered Successfully!!", make(map[string]string))
 
 	}
@@ -148,7 +145,6 @@ func LogoutUser(w http.ResponseWriter, r *http.Request) {
 			log.Println("Error received from Auth Service =", err)
 			return
 		}
-		log.Println("db.t====", db.t)
 
 		tokCook := &http.Cookie{
 			Name:    "token",

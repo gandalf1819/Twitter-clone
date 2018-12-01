@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"../models"
 	"../services/auth/authpb"
 	"../services/post/postpb"
 	"../services/user/userpb"
@@ -14,9 +13,16 @@ import (
 	"strconv"
 )
 
+type PostList struct {
+	Id        int
+	FirstName string
+	LastName  string
+	Post      string
+}
+
 type PostsPageData struct {
 	Friends []*userpb.UserListFields
-	Posts   []models.PostsList
+	Posts   []PostList
 }
 
 type Follow struct {
@@ -58,9 +64,44 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		postLists := make([]PostList, 0)
+
+		var userListObj *userpb.Login
+		userListObj, err = con.GetUserClient().GetUserFollowersById(context.Background(), user)
+		if err != nil {
+			log.Println("Error received from User Service =", err)
+		}
+
+		users := &postpb.Users{
+			Ids: make([]int32, 0),
+		}
+
+		for _, value := range userListObj.Users {
+			users.Ids = append(users.Ids, value.Id)
+		}
+		var allPosts *postpb.UserPosts
+		allPosts, err = con.GetUserPostClient().GetFollowerPosts(context.Background(), users)
+		if err != nil {
+			log.Println("Error received from UserPost Service =", err)
+		}
+
+		for _, user := range userListObj.Users {
+			for _, userPostsObj := range allPosts.Posts {
+				if user.Id == userPostsObj.UserId {
+					var postListObj = PostList{
+						Id:        int(user.Id),
+						FirstName: user.FirstName,
+						LastName:  user.LastName,
+						Post:      userPostsObj.Text,
+					}
+					postLists = append(postLists, postListObj)
+				}
+			}
+		}
+
 		postsData := PostsPageData{
 			Friends: friendLists.List,
-			Posts:   db.l.GetFollowerPosts(int(userId.TokenValue), &db.up),
+			Posts:   postLists,
 		}
 		log.Println("Posts=======", postsData.Posts)
 
@@ -93,7 +134,6 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 		}
 		text := statusMessage.Status
 
-		db.up.AddPost(user, text)
 		userPost := &postpb.PostText{
 			UserId: int32(user),
 			Text:   text,
@@ -104,7 +144,6 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 			log.Println("Error received from UserPost Service =", err)
 			return
 		}
-		log.Println("db.up===", db.up)
 		ReturnAPIResponse(w, r, 200, "Status shared successfully!!", make(map[string]string))
 	}
 }
@@ -130,7 +169,7 @@ func FollowUser(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 		follower := followsData.FollowerId
-		//db.l.FollowUser(user, follower)
+
 		fp := &userpb.FollowerParameters{
 			UserId:     int32(user),
 			FollowerId: int32(follower),
@@ -141,7 +180,7 @@ func FollowUser(w http.ResponseWriter, r *http.Request) {
 			log.Println("Error received from User Service =", err)
 			return
 		}
-		log.Println("db.l===", db.l)
+
 		ReturnAPIResponse(w, r, 200, "User Followed successfully!!", make(map[string]string))
 	}
 }
@@ -167,7 +206,7 @@ func UnfollowUser(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 		follower := followsData.FollowerId
-		//db.l.UnfollowUser(user, follower)
+
 		fp := &userpb.FollowerParameters{
 			UserId:     int32(user),
 			FollowerId: int32(follower),
