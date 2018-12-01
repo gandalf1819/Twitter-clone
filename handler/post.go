@@ -217,7 +217,7 @@ func UnfollowUser(w http.ResponseWriter, r *http.Request) {
 			log.Println("Error received from User Service =", err)
 			return
 		}
-		log.Println("db.l===", db.l)
+
 		ReturnAPIResponse(w, r, 200, "User UnFollowed successfully!!", make(map[string]string))
 	}
 }
