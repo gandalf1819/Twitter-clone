@@ -4,7 +4,7 @@ import (
 	"../userpb"
 	"google.golang.org/grpc"
 	"log"
-	//"os"
+	"os"
 )
 
 type UserClient struct {
@@ -17,7 +17,8 @@ var uc UserClient
 
 func InitializeUserClient() {
 	var err error
-	uc.UserPort = "5000"
+	uc.UserPort = os.Getenv("USER_PORT")
+	log.Println("userPort =", uc.UserPort)
 	uc.User, err = grpc.Dial("localhost:"+uc.UserPort, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("could not connect: %v", err)
