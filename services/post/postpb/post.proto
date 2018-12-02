@@ -21,13 +21,12 @@ message Users {
     repeated int32 Ids = 1;
 }
 
-message PostCount {
-    string Text = 1;
+message NoArgs {
 }
 
 
 service PostService {
     rpc AddPost(PostText) returns (Post) {};
     rpc GetFollowerPosts(Users) returns (UserPosts) {};
-    rpc GetAllPosts(PostCount) returns (UserPosts) {};
+    rpc GetAllPosts(NoArgs) returns (UserPosts) {};
   }

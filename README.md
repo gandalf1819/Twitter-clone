@@ -36,9 +36,11 @@ mini-twitter
 			|-- auth_test --> authetication testing module, contains test cases for the functions of driver.go.
 				|-- client.go
 				|-- auth_test.go
+                |-- runTestCases.sh --> shell script to start test client and run test cases
 			|-- authpb --> gRPC function calls using protocol buffers.
 				|-- auth.pb.go
 				|-- auth.proto
+            |-- runAuthService.sh --> shell script to run Auth Service   
 		|-- post
 			|-- post_driver --> add new posts and retrieve follower posts functionalities. 
 				|-- driver.go
@@ -46,10 +48,12 @@ mini-twitter
 				|-- server.go
 			|-- test --> post testing module, contains test cases for the functions of driver.go.
 				|-- client.go
-				|-- post_test.go	
+				|-- post_test.go
+                |-- runTestCases.sh --> shell script to start test client and run test cases	
 			|-- postpb --> gRPC function calls using protocol buffers.
 				|-- post.pb.go
 				|-- post.proto
+            |-- runPostService.sh --> shell script to run Post Service   
 		|-- user
 			|-- user_driver --> implementation of user module functionalities.
 				|-- driver.go
@@ -58,9 +62,11 @@ mini-twitter
 			|-- test --> user testing module, contains test cases for the user module functionalities of user.go.
 				|-- client.go
 				|-- user_test.go
+                |-- runTestCases.sh --> shell script to start test client and run test cases
 			|-- userpb --> gRPC function calls using protocol buffers.
 				|-- user.pb.go
 				|-- user.proto
+            |-- runUserService.sh --> shell script to run User Service    
 	|--views
 		|--css
 			|-- main.css --> stylesheet for mini-twitter
@@ -94,6 +100,7 @@ https://localhost:9090/login
 
 Use the same port that is defined in the runBackendServer.sh file.
 
+Launch the post, user and auth services with the help of shell scripts file defined in the respective services folder.
 ---
 
 
