@@ -150,6 +150,10 @@ func (*Server) GetUserFollowersById(ctx context.Context, user *userpb.UserId) (*
 	return userListObj, nil
 }
 
+func (*Server) GetAllUsers(ctx context.Context, in *userpb.NoArgs) (*userpb.Login, error) {
+	return &lo, nil
+}
+
 func GetMD5Hash(str string) string {
 	hasher := md5.New()
 	hasher.Write([]byte(str))
