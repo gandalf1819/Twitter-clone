@@ -7,11 +7,14 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
+	"os"
 )
 
 func main() {
 	fmt.Println("server started")
-	lis, err := net.Listen("tcp", "0.0.0.0:60061")
+	postPort := os.Getenv("USER_POST_PORT")
+	log.Println("postPort =", postPort)
+	lis, err := net.Listen("tcp", "0.0.0.0:"+postPort)
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}

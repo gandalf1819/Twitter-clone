@@ -51,6 +51,10 @@ func (*Server) GetFollowerPosts(ctx context.Context, users *postpb.Users) (*post
 	return posts, nil
 }
 
+func (*Server) GetAllPosts(ctx context.Context, in *postpb.NoArgs) (*postpb.UserPosts, error) {
+	return &up, nil
+}
+
 func IncrementPostId() int32 {
 	return int32(len(up.Posts) + 1)
 }

@@ -4,11 +4,12 @@ import (
 	"../postpb"
 	"google.golang.org/grpc"
 	"log"
+	"os"
 )
 
 type PostClient struct {
-	PostDB postpb.PostServiceClient
-	Post *grpc.ClientConn
+	PostDB   postpb.PostServiceClient
+	Post     *grpc.ClientConn
 	PostPort string
 }
 
@@ -17,7 +18,8 @@ var pc PostClient
 func InitializePostClient() {
 	var err error
 
-	pc.PostPort = "5000"
+	pc.PostPort = os.Getenv("USER_POST_PORT")
+	log.Println("postPort =", pc.PostPort)
 	pc.Post, err = grpc.Dial("localhost:"+pc.PostPort, grpc.WithInsecure())
 
 	if err != nil {
@@ -28,4 +30,3 @@ func InitializePostClient() {
 
 	log.Println("Post Client created at port =", pc.PostPort)
 }
-
