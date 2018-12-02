@@ -23,13 +23,44 @@ mini-twitter
 
     |-- handler
     	|-- auth.go --> authentication module, allows user registration and login portal.
-    	|-- init.go --> initialization module, initializes the login, token and post models.
+    	|-- init.go --> initialization module, initializes the connectors module.
     	|-- post.go --> config for post module, implementation of post, follow and unfollow functionality.
     	|-- response.go --> returns API response to user.
-    |-- models
-        |-- post.go   --> post model, defines post module features.
-        |-- token.go --> token validity duration, hash difficulties, etc.
-        |-- user.go --> user model, defines user module features.
+		|-- connectors.go --> connectors module, handles connections to authentication, user and userpost services.
+    |-- services
+		|-- auth
+			|-- auth_driver --> handles token initialization, generation and deletion.
+				|-- driver.go
+			|-- auth_server --> authentication server module.
+				|-- server.go
+			|-- auth_test --> authetication testing module, contains test cases for the functions of driver.go.
+				|-- client.go
+				|-- auth_test.go
+			|-- authpb --> gRPC function calls using protocol buffers.
+				|-- auth.pb.go
+				|-- auth.proto
+		|-- post
+			|-- post_driver --> add new posts and retrieve follower posts functionalities. 
+				|-- driver.go
+			|-- post_server --> post server module.
+				|-- server.go
+			|-- test --> post testing module, contains test cases for the functions of driver.go.
+				|-- client.go
+				|-- post_test.go	
+			|-- postpb --> gRPC function calls using protocol buffers.
+				|-- post.pb.go
+				|-- post.proto
+		|-- user
+			|-- user_driver --> implementation of user module functionalities.
+				|-- driver.go
+			|-- user_server --> user server module.
+				|-- server.go
+			|-- test --> user testing module, contains test cases for the user module functionalities of user.go.
+				|-- client.go
+				|-- user_test.go
+			|-- userpb --> gRPC function calls using protocol buffers.
+				|-- user.pb.go
+				|-- user.proto
 	|--views
 		|--css
 			|-- main.css --> stylesheet for mini-twitter
@@ -45,6 +76,7 @@ mini-twitter
 			|-- toastr.js --> function definitions for toastr features
 	|--web
 		|--server.go --> build target (the code that actually runs the server)
+	|-- runBackendServer.sh --> port specifications and command to start the server
 
 ---
 
