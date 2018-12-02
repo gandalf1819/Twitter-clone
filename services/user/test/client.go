@@ -17,7 +17,6 @@ var uc UserClient
 
 func InitializeUserClient() {
 	var err error
-	//uc.UserPort = os.Getenv("USER_PORT")
 	uc.UserPort = "5000"
 	uc.User, err = grpc.Dial("localhost:"+uc.UserPort, grpc.WithInsecure())
 	if err != nil {
