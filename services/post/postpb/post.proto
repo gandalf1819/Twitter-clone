@@ -2,27 +2,32 @@ syntax = "proto3";
 
 package postpb;
 
-message Post{
+message Post {
     int32 Id = 1;
     int32 UserId = 2;
     string Text = 3;
 }
 
-message UserPosts{
+message UserPosts {
     repeated Post Posts = 1;
 }
 
-message PostText{
+message PostText {
     int32 UserId = 1;
     string Text = 2;
 }
 
-message Users{
+message Users {
     repeated int32 Ids = 1;
+}
+
+message PostCount {
+    string Text = 1;
 }
 
 
 service PostService {
     rpc AddPost(PostText) returns (Post) {};
     rpc GetFollowerPosts(Users) returns (UserPosts) {};
+    rpc GetAllPosts(PostCount) returns (UserPosts) {};
   }
