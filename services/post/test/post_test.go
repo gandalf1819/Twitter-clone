@@ -1,4 +1,4 @@
-package post_test
+package test
 
 import (
 	"../postpb"
