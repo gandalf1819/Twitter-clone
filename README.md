@@ -100,6 +100,7 @@ https://localhost:9090/login
 
 Use the same port that is defined in the runBackendServer.sh file.
 
+Launch the post, user and auth services with the help of shell scripts file defined in the respective services folder.
 ---
 
 
