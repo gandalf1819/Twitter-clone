@@ -7,11 +7,13 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
+	//"os"
 )
 
 func main() {
 	fmt.Println("server started")
-	lis, err := net.Listen("tcp", "0.0.0.0:5000")
+	userPort := "5000"
+	lis, err := net.Listen("tcp", "0.0.0.0:"+userPort)
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}

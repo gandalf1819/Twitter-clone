@@ -51,6 +51,10 @@ message Status{
     bool ResponseStatus = 1;
 }
 
+message NoArgs{
+
+}
+
 service UserService {
     rpc Add(AddUserParameters) returns (User) {};
     rpc GetUserByEmailPassword(LoginDetails) returns (User) {};
@@ -58,4 +62,5 @@ service UserService {
     rpc UnfollowUser(FollowerParameters) returns (Status) {};
     rpc GetFollowerSuggestions(UserId) returns (UserList) {};
     rpc GetUserFollowersById(UserId) returns (Login) {};
+    rpc GetAllUsers(NoArgs) returns (Login) {};
   }
