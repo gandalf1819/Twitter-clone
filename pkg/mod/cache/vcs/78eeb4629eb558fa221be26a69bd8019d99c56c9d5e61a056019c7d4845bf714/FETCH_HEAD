@@ -1,0 +1,5 @@
+89d80287644767070914e30199b4d959e491bd3d		branch 'addlog' of https://github.com/prometheus/common
+d04e5f002ee4722e59395f0d1440c7b9fdce8e9a		branch 'change-maintainer-to-brian' of https://github.com/prometheus/common
+a348e5af9bb8a589d1241d84e6cb9c6e391aa74e		branch 'fish-http-config-expose-keepalive' of https://github.com/prometheus/common
+4724e9255275ce38f7179b2478abeae4e28c904f		branch 'master' of https://github.com/prometheus/common
+9e80d9fedfacd3bcbbb6d063ecbd0fc35b3f717d		branch 'om-float' of https://github.com/prometheus/common
