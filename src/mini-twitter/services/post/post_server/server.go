@@ -1,11 +1,11 @@
 package main
 
 import (
-	pd "../post_driver"
-	"../postpb"
 	"fmt"
 	"google.golang.org/grpc"
 	"log"
+	pd "mini-twitter/services/post/post_driver"
+	"mini-twitter/services/post/postpb"
 	"net"
 	"os"
 )
