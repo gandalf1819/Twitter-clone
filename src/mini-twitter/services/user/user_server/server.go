@@ -1,11 +1,11 @@
 package main
 
 import (
-	ud "../user_driver"
-	"../userpb"
 	"fmt"
 	"google.golang.org/grpc"
 	"log"
+	ud "mini-twitter/services/user/user_driver"
+	"mini-twitter/services/user/userpb"
 	"net"
 	"os"
 )
