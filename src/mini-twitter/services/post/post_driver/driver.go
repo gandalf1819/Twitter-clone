@@ -19,7 +19,7 @@ func Init() {
 	log.Println("Init called ")
 	_, err := InteractWithRaftStorage("PUT", "postDB", up)
 	if err != nil {
-		log.Println("Error occured while storing token data in Raft =", err)
+		log.Println("Error occured while storing post data in Raft =", err)
 		panic(err)
 	}
 }
@@ -28,27 +28,27 @@ func GetPostDB(value interface{}) (postpb.UserPosts, error) {
 	var db postpb.UserPosts
 	data, err := InteractWithRaftStorage("GET", "postDB", db)
 	if err != nil {
-		log.Println("Error occured while getting token data from Raft =", err)
+		log.Println("Error occured while getting post data from Raft =", err)
 		panic(err)
 	}
 	var postDB postpb.UserPosts
-	postDB, err = DecodeRaftTokenStorage(data)
+	postDB, err = DecodeRaftPostStorage(data)
 	if err != nil {
-		log.Println("Error occured while decoding token data from Raft storage =", err)
+		log.Println("Error occured while decoding post data from Raft storage =", err)
 		return postDB, err
 	}
-	log.Println("tokenDB after decode =", postDB)
+	log.Println("postDB after decode =", postDB)
 	return postDB, nil
 }
 
-func DecodeRaftTokenStorage(db string) (postpb.UserPosts, error) {
-	log.Println("Decode Token Storage called")
+func DecodeRaftPostStorage(db string) (postpb.UserPosts, error) {
+	log.Println("Decode post Storage called")
 	dec := gob.NewDecoder(bytes.NewBufferString(db))
 	if err := dec.Decode(&up); err != nil {
 		log.Fatalf("raftexample: could not decode message (%v)", err)
 		return up, err
 	}
-	log.Println("tokenDB in DecodeRaftTokenStorage =", up)
+	log.Println("postDB in DecodeRaftpostStorage =", up)
 
 	return up, nil
 }
@@ -109,7 +109,7 @@ func (*Server) AddPost(ctx context.Context, postDetails *postpb.PostText) (*post
 
 	_, err = InteractWithRaftStorage("PUT", "postDB", postDB)
 	if err != nil {
-		log.Println("Error occured while storing token data in Raft =", err)
+		log.Println("Error occured while storing post data in Raft =", err)
 		panic(err)
 	}
 	return post, nil
@@ -136,7 +136,7 @@ func (*Server) GetFollowerPosts(ctx context.Context, users *postpb.Users) (*post
 
 	_, err = InteractWithRaftStorage("PUT", "postDB", postDB)
 	if err != nil {
-		log.Println("Error occured while storing token data in Raft =", err)
+		log.Println("Error occured while storing post data in Raft =", err)
 		panic(err)
 	}
 

@@ -1,11 +1,16 @@
 package user_driver
 
 import (
-	"../userpb"
+	"bytes"
 	"context"
 	"crypto/md5"
+	"encoding/gob"
 	"encoding/hex"
+	"io/ioutil"
 	"log"
+	"mini-twitter/services/user/userpb"
+	"net/http"
+	"strings"
 )
 
 type Server struct{}
@@ -13,19 +18,85 @@ type Server struct{}
 var lo userpb.Login
 
 func Init() {
-	lo := NewLogin()
+	_, err := InteractWithRaftStorage("PUT", "userDB", lo)
+	if err != nil {
+		log.Println("Error occured while storing post data in Raft =", err)
+		panic(err)
+	}
 
 	log.Println("DB User Initialized =", lo.Users)
 }
 
-func NewLogin() *userpb.Login {
-	userPosts := &userpb.Login{
-		Users: make([]*userpb.User, 0),
+func GetUserDB(value interface{}) (userpb.Login, error) {
+	var db userpb.Login
+	data, err := InteractWithRaftStorage("GET", "userDB", db)
+	if err != nil {
+		log.Println("Error occured while getting user data from Raft =", err)
+		panic(err)
 	}
-	return userPosts
+	var userDB userpb.Login
+	userDB, err = DecodeRaftUserStorage(data)
+	if err != nil {
+		log.Println("Error occured while decoding user data from Raft storage =", err)
+		return userDB, err
+	}
+	log.Println("userDB after decode =", userDB)
+	return userDB, nil
+}
+
+func DecodeRaftUserStorage(db string) (userpb.Login, error) {
+	log.Println("Decode User Storage called")
+	dec := gob.NewDecoder(bytes.NewBufferString(db))
+	if err := dec.Decode(&lo); err != nil {
+		log.Fatalf("raftexample: could not decode message (%v)", err)
+		return lo, err
+	}
+	//log.Println("userDB in DecodeRaftTokenStorage =", lo)
+
+	return lo, nil
+}
+
+func InteractWithRaftStorage(method string, key string, value interface{}) (string, error) {
+	log.Println("Interacted with Raft, method called =", method)
+	var payloadValue string
+	if method != "GET" {
+		var buf bytes.Buffer
+		if err := gob.NewEncoder(&buf).Encode(value); err != nil {
+			log.Println("Error occured while encoding ", key, " data =", err)
+			return "", err
+		}
+		payloadValue = buf.String()
+	}
+
+	url := "http://127.0.0.1:12380/" + key
+	var payload *strings.Reader
+	payload = nil
+	if value != nil {
+		payload = strings.NewReader(payloadValue)
+	}
+
+	req, _ := http.NewRequest(method, url, payload)
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Println("Error received from Raft =", err)
+		return "", err
+	}
+
+	var data []byte
+	data, err = ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Println("Error occured while decoding response from Raft =", err)
+		return "", err
+	}
+
+	//log.Println("data received from Raft after calling ", method, " method =", string(data))
+
+	return string(data), nil
 }
 
 func (*Server) Add(ctx context.Context, userParams *userpb.AddUserParameters) (*userpb.User, error) {
+	var lo userpb.Login
 	user := &userpb.User{
 		Id:        IncrementUserId(),
 		FirstName: userParams.FirstName,
@@ -35,52 +106,94 @@ func (*Server) Add(ctx context.Context, userParams *userpb.AddUserParameters) (*
 		Follows:   make([]int32, 0),
 	}
 
-	lo.Users = append(lo.Users, user)
+	userDB, err := GetUserDB(lo)
+	if err != nil {
+		return nil, err
+	}
+
+	userDB.Users = append(userDB.Users, user)
+
+	_, err = InteractWithRaftStorage("PUT", "userDB", userDB)
+	if err != nil {
+		log.Println("Error occured while storing user data in Raft =", err)
+		panic(err)
+	}
 	log.Println("User added =", user)
-	log.Println("User DB =", lo.Users)
+	log.Println("User DB =", userDB.Users)
 	return user, nil
 }
 
 func (*Server) GetUserByEmailPassword(ctx context.Context, loginParams *userpb.LoginDetails) (*userpb.User, error) {
+	var lo userpb.Login
+
+	userDB, err := GetUserDB(lo)
+	if err != nil {
+		return nil, err
+	}
+
 	var userObj userpb.User
-	for id, value := range lo.Users {
+	for id, value := range userDB.Users {
 		if value.Email == loginParams.Email && value.Password == GetMD5Hash(loginParams.Password) {
-			userObj = *lo.Users[id]
+			userObj = *userDB.Users[id]
 		}
 	}
 	return &userObj, nil
 }
 
 func (*Server) FollowUser(ctx context.Context, fp *userpb.FollowerParameters) (*userpb.Status, error) {
-	for id, value := range lo.Users {
+	var lo userpb.Login
+
+	userDB, err := GetUserDB(lo)
+	if err != nil {
+		return nil, err
+	}
+
+	for id, value := range userDB.Users {
 		if value.Id == fp.UserId {
-			lo.Users[id].Follows = append(lo.Users[id].Follows, fp.FollowerId)
+			userDB.Users[id].Follows = append(userDB.Users[id].Follows, fp.FollowerId)
 			break
 		}
 	}
+	_, err = InteractWithRaftStorage("PUT", "userDB", userDB)
+	if err != nil {
+		log.Println("Error occured while storing user data in Raft =", err)
+		panic(err)
+	}
 	log.Println("User ", fp.UserId, " follows ", fp.FollowerId)
-	log.Println("User DB =", lo.Users)
+	log.Println("User DB =", userDB.Users)
 
 	return &userpb.Status{ResponseStatus: true}, nil
 }
 
 func (*Server) UnfollowUser(ctx context.Context, fp *userpb.FollowerParameters) (*userpb.Status, error) {
 	log.Println("UnfollowUser called =")
-	for id, value := range lo.Users {
+	var lo userpb.Login
+
+	userDB, err := GetUserDB(lo)
+	if err != nil {
+		return nil, err
+	}
+	for id, value := range userDB.Users {
 		if value.Id == fp.UserId {
 			log.Println("value =", value)
-			length := len(lo.Users[id].Follows) - 1
+			length := len(userDB.Users[id].Follows) - 1
 			log.Println("length =", length)
-			for index, currentValue := range lo.Users[id].Follows {
+			for index, currentValue := range userDB.Users[id].Follows {
 				if currentValue == fp.FollowerId {
-					lo.Users[id].Follows[index], lo.Users[id].Follows[length] = lo.Users[id].Follows[length], lo.Users[id].Follows[index]
+					userDB.Users[id].Follows[index], userDB.Users[id].Follows[length] = userDB.Users[id].Follows[length], userDB.Users[id].Follows[index]
 					break
 				}
 			}
 
-			lo.Users[id].Follows = lo.Users[id].Follows[:length]
+			userDB.Users[id].Follows = userDB.Users[id].Follows[:length]
+
+			_, err = InteractWithRaftStorage("PUT", "userDB", userDB)
+			if err != nil {
+				log.Println("Error occured while storing user data in Raft =", err)
+				panic(err)
+			}
 			log.Println("UserId ", fp.UserId, " unfollows ", fp.FollowerId)
-			log.Println("User DB =", lo.Users)
+			log.Println("User DB =", userDB.Users)
 
 			return &userpb.Status{ResponseStatus: true}, nil
 		}
@@ -90,14 +203,25 @@ func (*Server) UnfollowUser(ctx context.Context, fp *userpb.FollowerParameters) 
 }
 
 func (*Server) GetFollowerSuggestions(ctx context.Context, userId *userpb.UserId) (*userpb.UserList, error) {
-	var userObj userpb.User
+	log.Println("Get Follower Suggestions called")
+
+	var lo userpb.Login
+
+	userDB, err := GetUserDB(lo)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Println("userDB after calling Get Follower Suggestions =", userDB)
+
+	var userObj *userpb.User
 	userList := userpb.UserList{
 		List: make([]*userpb.UserListFields, 0),
 	}
 
-	for _, user := range lo.Users {
+	for _, user := range userDB.Users {
 		if user.Id == userId.Id {
-			userObj = *user
+			userObj = user
 		} else {
 			currentUser := &userpb.UserListFields{
 				Id:        user.Id,
@@ -124,14 +248,20 @@ func (*Server) GetFollowerSuggestions(ctx context.Context, userId *userpb.UserId
 }
 
 func (*Server) GetUserFollowersById(ctx context.Context, user *userpb.UserId) (*userpb.Login, error) {
+	var lo userpb.Login
+
+	userDB, err := GetUserDB(lo)
+	if err != nil {
+		return nil, err
+	}
 	var userObj *userpb.User
 	userListObj := &userpb.Login{
 		Users: make([]*userpb.User, 0),
 	}
 
-	for id, value := range lo.Users {
+	for id, value := range userDB.Users {
 		if value.Id == user.Id {
-			userObj = lo.Users[id]
+			userObj = userDB.Users[id]
 			break
 		}
 	}
@@ -139,7 +269,7 @@ func (*Server) GetUserFollowersById(ctx context.Context, user *userpb.UserId) (*
 	userListObj.Users = append(userListObj.Users, userObj)
 
 	for _, value := range userObj.Follows {
-		for _, user := range lo.Users {
+		for _, user := range userDB.Users {
 			if value == user.Id {
 				userListObj.Users = append(userListObj.Users, user)
 				break
@@ -151,6 +281,12 @@ func (*Server) GetUserFollowersById(ctx context.Context, user *userpb.UserId) (*
 }
 
 func (*Server) GetAllUsers(ctx context.Context, in *userpb.NoArgs) (*userpb.Login, error) {
+	var err error
+	log.Println("GetAllUsers called")
+	lo, err = GetUserDB(lo)
+	if err != nil {
+		return nil, err
+	}
 	return &lo, nil
 }
 
@@ -161,5 +297,9 @@ func GetMD5Hash(str string) string {
 }
 
 func IncrementUserId() int32 {
-	return int32(len(lo.Users) + 1)
+	var lo userpb.Login
+
+	userDB, _ := GetUserDB(lo)
+
+	return int32(len(userDB.Users) + 1)
 }
