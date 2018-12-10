@@ -1,11 +1,11 @@
 package main
 
 import (
-	ad "../auth_driver"
-	"../authpb"
 	"fmt"
 	"google.golang.org/grpc"
 	"log"
+	ad "mini-twitter/services/auth/auth_driver"
+	"mini-twitter/services/auth/authpb"
 	"net"
 	"os"
 )
