@@ -18,7 +18,6 @@ type Server struct{}
 var lo userpb.Login
 
 func Init() {
-	//lo := NewLogin()
 	_, err := InteractWithRaftStorage("PUT", "userDB", lo)
 	if err != nil {
 		log.Println("Error occured while storing post data in Raft =", err)
@@ -52,7 +51,7 @@ func DecodeRaftUserStorage(db string) (userpb.Login, error) {
 		log.Fatalf("raftexample: could not decode message (%v)", err)
 		return lo, err
 	}
-	log.Println("userDB in DecodeRaftTokenStorage =", lo)
+	//log.Println("userDB in DecodeRaftTokenStorage =", lo)
 
 	return lo, nil
 }
@@ -91,7 +90,7 @@ func InteractWithRaftStorage(method string, key string, value interface{}) (stri
 		return "", err
 	}
 
-	log.Println("data received from Raft after calling ", method, " method =", string(data))
+	//log.Println("data received from Raft after calling ", method, " method =", string(data))
 
 	return string(data), nil
 }
@@ -213,14 +212,16 @@ func (*Server) GetFollowerSuggestions(ctx context.Context, userId *userpb.UserId
 		return nil, err
 	}
 
-	var userObj userpb.User
+	log.Println("userDB after calling Get Follower Suggestions =", userDB)
+
+	var userObj *userpb.User
 	userList := userpb.UserList{
 		List: make([]*userpb.UserListFields, 0),
 	}
 
 	for _, user := range userDB.Users {
 		if user.Id == userId.Id {
-			userObj = *user
+			userObj = user
 		} else {
 			currentUser := &userpb.UserListFields{
 				Id:        user.Id,
@@ -296,5 +297,9 @@ func GetMD5Hash(str string) string {
 }
 
 func IncrementUserId() int32 {
-	return int32(len(lo.Users) + 1)
+	var lo userpb.Login
+
+	userDB, _ := GetUserDB(lo)
+
+	return int32(len(userDB.Users) + 1)
 }
