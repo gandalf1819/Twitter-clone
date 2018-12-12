@@ -4,11 +4,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/gob"
-	"io/ioutil"
 	"log"
 	"mini-twitter/services/post/postpb"
-	"net/http"
-	"strings"
+	"mini-twitter/util"
 )
 
 type Server struct{}
@@ -17,7 +15,7 @@ var up postpb.UserPosts
 
 func Init() {
 	log.Println("Init called ")
-	_, err := InteractWithRaftStorage("PUT", "postDB", up)
+	_, err := util.InteractWithRaftStorage("PUT", "postDB", up)
 	if err != nil {
 		log.Println("Error occured while storing post data in Raft =", err)
 		panic(err)
@@ -26,7 +24,7 @@ func Init() {
 
 func GetPostDB(value interface{}) (postpb.UserPosts, error) {
 	var db postpb.UserPosts
-	data, err := InteractWithRaftStorage("GET", "postDB", db)
+	data, err := util.InteractWithRaftStorage("GET", "postDB", db)
 	if err != nil {
 		log.Println("Error occured while getting post data from Raft =", err)
 		panic(err)
@@ -53,45 +51,6 @@ func DecodeRaftPostStorage(db string) (postpb.UserPosts, error) {
 	return up, nil
 }
 
-func InteractWithRaftStorage(method string, key string, value interface{}) (string, error) {
-	log.Println("Interacted with Raft, method called =", method)
-	var payloadValue string
-	if method != "GET" {
-		var buf bytes.Buffer
-		if err := gob.NewEncoder(&buf).Encode(value); err != nil {
-			log.Println("Error occured while encoding ", key, " data =", err)
-			return "", err
-		}
-		payloadValue = buf.String()
-	}
-
-	url := "http://127.0.0.1:12380/" + key
-	var payload *strings.Reader
-	payload = nil
-	if value != nil {
-		payload = strings.NewReader(payloadValue)
-	}
-
-	req, _ := http.NewRequest(method, url, payload)
-
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		log.Println("Error received from Raft =", err)
-		return "", err
-	}
-
-	var data []byte
-	data, err = ioutil.ReadAll(res.Body)
-	if err != nil {
-		log.Println("Error occured while decoding response from Raft =", err)
-		return "", err
-	}
-
-	log.Println("data received from Raft after calling ", method, " method =", string(data))
-
-	return string(data), nil
-}
-
 func (*Server) AddPost(ctx context.Context, postDetails *postpb.PostText) (*postpb.Post, error) {
 	log.Println("AddPost API called")
 	var up postpb.UserPosts
@@ -107,7 +66,7 @@ func (*Server) AddPost(ctx context.Context, postDetails *postpb.PostText) (*post
 	postDB.Posts = append(postDB.Posts, post)
 	log.Println("PostsDB = ", postDB)
 
-	_, err = InteractWithRaftStorage("PUT", "postDB", postDB)
+	_, err = util.InteractWithRaftStorage("PUT", "postDB", postDB)
 	if err != nil {
 		log.Println("Error occured while storing post data in Raft =", err)
 		panic(err)
@@ -134,7 +93,7 @@ func (*Server) GetFollowerPosts(ctx context.Context, users *postpb.Users) (*post
 		}
 	}
 
-	_, err = InteractWithRaftStorage("PUT", "postDB", postDB)
+	_, err = util.InteractWithRaftStorage("PUT", "postDB", postDB)
 	if err != nil {
 		log.Println("Error occured while storing post data in Raft =", err)
 		panic(err)

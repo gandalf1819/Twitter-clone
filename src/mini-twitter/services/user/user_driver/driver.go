@@ -6,11 +6,9 @@ import (
 	"crypto/md5"
 	"encoding/gob"
 	"encoding/hex"
-	"io/ioutil"
 	"log"
 	"mini-twitter/services/user/userpb"
-	"net/http"
-	"strings"
+	"mini-twitter/util"
 )
 
 type Server struct{}
@@ -18,7 +16,7 @@ type Server struct{}
 var lo userpb.Login
 
 func Init() {
-	_, err := InteractWithRaftStorage("PUT", "userDB", lo)
+	_, err := util.InteractWithRaftStorage("PUT", "userDB", lo)
 	if err != nil {
 		log.Println("Error occured while storing post data in Raft =", err)
 		panic(err)
@@ -29,7 +27,7 @@ func Init() {
 
 func GetUserDB(value interface{}) (userpb.Login, error) {
 	var db userpb.Login
-	data, err := InteractWithRaftStorage("GET", "userDB", db)
+	data, err := util.InteractWithRaftStorage("GET", "userDB", db)
 	if err != nil {
 		log.Println("Error occured while getting user data from Raft =", err)
 		panic(err)
@@ -56,45 +54,6 @@ func DecodeRaftUserStorage(db string) (userpb.Login, error) {
 	return lo, nil
 }
 
-func InteractWithRaftStorage(method string, key string, value interface{}) (string, error) {
-	log.Println("Interacted with Raft, method called =", method)
-	var payloadValue string
-	if method != "GET" {
-		var buf bytes.Buffer
-		if err := gob.NewEncoder(&buf).Encode(value); err != nil {
-			log.Println("Error occured while encoding ", key, " data =", err)
-			return "", err
-		}
-		payloadValue = buf.String()
-	}
-
-	url := "http://127.0.0.1:12380/" + key
-	var payload *strings.Reader
-	payload = nil
-	if value != nil {
-		payload = strings.NewReader(payloadValue)
-	}
-
-	req, _ := http.NewRequest(method, url, payload)
-
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		log.Println("Error received from Raft =", err)
-		return "", err
-	}
-
-	var data []byte
-	data, err = ioutil.ReadAll(res.Body)
-	if err != nil {
-		log.Println("Error occured while decoding response from Raft =", err)
-		return "", err
-	}
-
-	//log.Println("data received from Raft after calling ", method, " method =", string(data))
-
-	return string(data), nil
-}
-
 func (*Server) Add(ctx context.Context, userParams *userpb.AddUserParameters) (*userpb.User, error) {
 	var lo userpb.Login
 	user := &userpb.User{
@@ -113,7 +72,7 @@ func (*Server) Add(ctx context.Context, userParams *userpb.AddUserParameters) (*
 
 	userDB.Users = append(userDB.Users, user)
 
-	_, err = InteractWithRaftStorage("PUT", "userDB", userDB)
+	_, err = util.InteractWithRaftStorage("PUT", "userDB", userDB)
 	if err != nil {
 		log.Println("Error occured while storing user data in Raft =", err)
 		panic(err)
@@ -154,7 +113,7 @@ func (*Server) FollowUser(ctx context.Context, fp *userpb.FollowerParameters) (*
 			break
 		}
 	}
-	_, err = InteractWithRaftStorage("PUT", "userDB", userDB)
+	_, err = util.InteractWithRaftStorage("PUT", "userDB", userDB)
 	if err != nil {
 		log.Println("Error occured while storing user data in Raft =", err)
 		panic(err)
@@ -187,7 +146,7 @@ func (*Server) UnfollowUser(ctx context.Context, fp *userpb.FollowerParameters) 
 
 			userDB.Users[id].Follows = userDB.Users[id].Follows[:length]
 
-			_, err = InteractWithRaftStorage("PUT", "userDB", userDB)
+			_, err = util.InteractWithRaftStorage("PUT", "userDB", userDB)
 			if err != nil {
 				log.Println("Error occured while storing user data in Raft =", err)
 				panic(err)
