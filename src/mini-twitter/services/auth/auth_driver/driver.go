@@ -5,12 +5,10 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
-	"io/ioutil"
 	"log"
 	"math/rand"
 	"mini-twitter/services/auth/authpb"
-	"net/http"
-	"strings"
+	"mini-twitter/util"
 )
 
 type Server struct{}
@@ -26,7 +24,7 @@ func Init() {
 	tok := NewToken()
 	db.t = tok
 
-	_, err := InteractWithRaftStorage("PUT", "tokenDB", db.t)
+	_, err := util.InteractWithRaftStorage("PUT", "tokenDB", db.t)
 	if err != nil {
 		log.Println("Error occured while storing token data in Raft =", err)
 		panic(err)
@@ -37,7 +35,7 @@ func Init() {
 
 func GetTokenDB(value interface{}) (*authpb.AuthToken, error) {
 	var db TokenDB
-	data, err := InteractWithRaftStorage("GET", "tokenDB", db.t)
+	data, err := util.InteractWithRaftStorage("GET", "tokenDB", db.t)
 	if err != nil {
 		log.Println("Error occured while getting token data from Raft =", err)
 		panic(err)
@@ -62,45 +60,6 @@ func DecodeRaftTokenStorage(db string) (*authpb.AuthToken, error) {
 	log.Println("tokenDB in DecodeRaftTokenStorage =", tokenDB)
 
 	return &tokenDB, nil
-}
-
-func InteractWithRaftStorage(method string, key string, value interface{}) (string, error) {
-	log.Println("Interacted with Raft, method called =", method)
-	var payloadValue string
-	if method != "GET" {
-		var buf bytes.Buffer
-		if err := gob.NewEncoder(&buf).Encode(value); err != nil {
-			log.Println("Error occured while encoding ", key, " data =", err)
-			return "", err
-		}
-		payloadValue = buf.String()
-	}
-
-	url := "http://127.0.0.1:12380/" + key
-	var payload *strings.Reader
-	payload = nil
-	if value != nil {
-		payload = strings.NewReader(payloadValue)
-	}
-
-	req, _ := http.NewRequest(method, url, payload)
-
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		log.Println("Error received from Raft =", err)
-		return "", err
-	}
-
-	var data []byte
-	data, err = ioutil.ReadAll(res.Body)
-	if err != nil {
-		log.Println("Error occured while decoding response from Raft =", err)
-		return "", err
-	}
-
-	log.Println("data received from Raft after calling ", method, " method =", string(data))
-
-	return string(data), nil
 }
 
 func NewToken() *authpb.AuthToken {
@@ -148,7 +107,7 @@ func (s *Server) AddToken(ctx context.Context, userId *authpb.UserId) (*authpb.A
 
 	db.t.Token[tok.TokenName] = userId.User
 
-	_, err = InteractWithRaftStorage("PUT", "tokenDB", db.t)
+	_, err = util.InteractWithRaftStorage("PUT", "tokenDB", db.t)
 	if err != nil {
 		log.Println("Error occured while storing token data in Raft =", err)
 		panic(err)
@@ -170,7 +129,7 @@ func (*Server) UnsetToken(ctx context.Context, tokName *authpb.AuthTokenName) (*
 
 	db.t = tokenDB
 	delete(db.t.Token, tokName.TokenName)
-	_, err = InteractWithRaftStorage("PUT", "tokenDB", db.t)
+	_, err = util.InteractWithRaftStorage("PUT", "tokenDB", db.t)
 	if err != nil {
 		log.Println("Error occured while storing token data in Raft =", err)
 		panic(err)
