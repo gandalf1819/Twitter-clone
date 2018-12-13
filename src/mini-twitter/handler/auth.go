@@ -1,15 +1,16 @@
 package handler
 
 import (
-	"../services/auth/authpb"
-	"../services/user/userpb"
 	"context"
 	"encoding/json"
 	"html/template"
 	"io/ioutil"
 	"log"
+	"mini-twitter/services/auth/authpb"
+	"mini-twitter/services/user/userpb"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -40,7 +41,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		json.Unmarshal([]byte(body), &login)
 		email := login.Email
 		password := login.Password
-		
+
 		loginDetails := &userpb.LoginDetails{
 			Email:    email,
 			Password: password,
@@ -52,7 +53,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if user.Id != 0 {
-			
+
 			userId := &authpb.UserId{
 				User: int32(user.Id),
 			}
@@ -106,7 +107,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		lastName := register.LastName
 		email := register.Email
 		password := register.Password
-		
+
 		userParams := &userpb.AddUserParameters{
 			FirstName: firstName,
 			LastName:  lastName,
@@ -115,7 +116,12 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		}
 		_, err = con.GetUserClient().Add(context.Background(), userParams)
 		if err != nil {
-			ReturnAPIResponse(w, r, 422, "Error occured while login. Contact your system admin for more details!!", make(map[string]string))
+			if strings.Contains(err.Error(), "User already registered!!") {
+				ReturnAPIResponse(w, r, 422, "User already registered!!", make(map[string]string))
+			} else {
+				ReturnAPIResponse(w, r, 422, "Error occured while login. Contact your system admin for more details!!", make(map[string]string))
+			}
+
 			log.Println("Error received from User Service =", err)
 			return
 		}

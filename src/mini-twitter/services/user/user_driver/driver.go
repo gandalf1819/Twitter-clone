@@ -6,6 +6,7 @@ import (
 	"crypto/md5"
 	"encoding/gob"
 	"encoding/hex"
+	"errors"
 	"log"
 	"mini-twitter/services/user/userpb"
 	"mini-twitter/util"
@@ -68,6 +69,12 @@ func (*Server) Add(ctx context.Context, userParams *userpb.AddUserParameters) (*
 	userDB, err := GetUserDB(lo)
 	if err != nil {
 		return nil, err
+	}
+
+	for _, value := range userDB.Users {
+		if value.Email == user.Email {
+			return nil, errors.New("User already registered!!")
+		}
 	}
 
 	userDB.Users = append(userDB.Users, user)
