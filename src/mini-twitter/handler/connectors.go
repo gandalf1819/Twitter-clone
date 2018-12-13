@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"../services/auth/authpb"
-	"../services/post/postpb"
-	"../services/user/userpb"
 	"google.golang.org/grpc"
 	"log"
+	"mini-twitter/services/auth/authpb"
+	"mini-twitter/services/post/postpb"
+	"mini-twitter/services/user/userpb"
 	"os"
 )
 
