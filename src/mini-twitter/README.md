@@ -1,8 +1,7 @@
 ## Mini Twitter
 ---
 
-Mini twitter is a simple web application, comprised of a web server written in Go. For stage 1 of this project, instead of using a database, we are keeping everything in memory. 
-
+Mini twitter is a simple web application, comprised of a web server written in Go. 
 ---
 
 ## Features
@@ -66,7 +65,16 @@ mini-twitter
 			|-- userpb --> gRPC function calls using protocol buffers.
 				|-- user.pb.go
 				|-- user.proto
-            |-- runUserService.sh --> shell script to run User Service    
+            |-- runUserService.sh --> shell script to run User Service
+	|--raft
+		|-- raftexample-1
+		|-- raftexample-2
+		|-- raftexample-3
+		|-- app.exe
+		|-- listener.go
+		|-- main.go
+		|-- raft.go
+		|-- raftexample_test.go
 	|--views
 		|--css
 			|-- main.css --> stylesheet for mini-twitter
@@ -83,6 +91,25 @@ mini-twitter
 	|--web
 		|--server.go --> build target (the code that actually runs the server)
 	|-- runBackendServer.sh --> port specifications and command to start the server
+
+---
+
+### RAFT Implementation
+
+Raft is a consensus algorithm that is designed to be easy to understand. It's equivalent to Paxos in fault-tolerance and performance. The difference is that it's decomposed into relatively independent subproblems, and it cleanly addresses all major pieces needed for practical systems. We hope Raft will make consensus available to a wider audience, and that this wider audience will be able to develop a variety of higher quality consensus-based systems than are available today.
+
+Raft decomposes consensus into three sub-problems:
+
+* Leader Election: 
+	A new leader needs to be elected in case of the failure of an existing one.
+
+* Log replication: 
+	The leader needs to keep the logs of all servers in sync with its own through replication.
+
+* Safety: 
+	If one of the servers has committed a log entry at a particular index, no other server can apply a different log entry for that index.
+
+Each server exists in one of the three states: leader, follower, or candidate.
 
 ---
 
