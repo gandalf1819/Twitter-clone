@@ -1,13 +1,13 @@
-## Mini Twitter
+## Webber
 ---
 
-Mini twitter is a simple web application, comprised of a web server written in Go. 
+Webber is a simple web application, comprised of a web server written in Go. 
 
 ---
 
 ## Features
 
-Mini-twitter provides the following features in the application.
+Webber provides the following features in the application.
 
 1. User registration with username and password.
 2. Logging in as a given user, given username and password.
@@ -19,7 +19,7 @@ Mini-twitter provides the following features in the application.
 
 ## Project Schema
 
-mini-twitter 
+Webber 
 
     |-- handler
     	|-- auth.go --> authentication module, allows user registration and login portal.
@@ -116,7 +116,7 @@ Raft decomposes consensus into three sub-problems:
 
 ## Running the application
 
-Go to the mini-twitter folder and in the terminal run the following command:
+Go to the Webber folder and in the terminal run the following command:
 
 ./runBackendServer.sh
 
@@ -129,6 +129,7 @@ https://localhost:9090/login
 Use the same port that is defined in the runBackendServer.sh file.
 
 Launch the post, user and auth services with the help of shell scripts file defined in the respective services folder.
+
 ---
 
 
