@@ -1,10 +1,11 @@
 package test
 
 import (
-	"../userpb"
 	"context"
 	"log"
+	"mini-twitter/services/user/userpb"
 	"testing"
+	"time"
 )
 
 func TestRegister(t *testing.T) {
@@ -47,6 +48,8 @@ func TestRegister(t *testing.T) {
 			return
 		}
 
+		time.Sleep(1 * time.Second)
+
 		var allUsers *userpb.Login
 		allUsers, err = uc.UserDB.GetAllUsers(context.Background(), &userpb.NoArgs{})
 		if err != nil {
@@ -79,16 +82,18 @@ func TestFollowUser(t *testing.T) {
 
 	followerMap["Yuvraj"] = 0
 	//Nikhil Follows Chinmay
-	fp = &userpb.FollowerParameters{
-		UserId:     int32(1),
-		FollowerId: int32(2),
-	}
-	_, err = uc.UserDB.FollowUser(context.Background(), fp)
-	if err != nil {
-		log.Println("Error received from User Service =", err)
-		return
-	}
-	followerMap["Chinmay"] = 0
+	// fp = &userpb.FollowerParameters{
+	// 	UserId:     int32(1),
+	// 	FollowerId: int32(2),
+	// }
+	// _, err = uc.UserDB.FollowUser(context.Background(), fp)
+	// if err != nil {
+	// 	log.Println("Error received from User Service =", err)
+	// 	return
+	// }
+	// followerMap["Chinmay"] = 0
+
+	time.Sleep(1 * time.Second)
 
 	user := &userpb.UserId{
 		Id: int32(1),
@@ -123,6 +128,8 @@ func TestUnFollowUser(t *testing.T) {
 		log.Println("Error received from User Service =", err)
 		return
 	}
+
+	time.Sleep(1 * time.Second)
 
 	unFollowerMap["Yuvraj"] = 0
 

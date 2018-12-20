@@ -29,6 +29,7 @@ func GetPostDB(value interface{}) (postpb.UserPosts, error) {
 		log.Println("Error occured while getting post data from Raft =", err)
 		panic(err)
 	}
+	log.Println("data received after interactwithraftstorage =", data)
 	var postDB postpb.UserPosts
 	postDB, err = DecodeRaftPostStorage(data)
 	if err != nil {
@@ -46,7 +47,7 @@ func DecodeRaftPostStorage(db string) (postpb.UserPosts, error) {
 		log.Fatalf("raftexample: could not decode message (%v)", err)
 		return up, err
 	}
-	log.Println("postDB in DecodeRaftpostStorage =", up)
+	//log.Println("postDB in DecodeRaftpostStorage =", up)
 
 	return up, nil
 }
@@ -109,9 +110,12 @@ func (*Server) GetAllPosts(ctx context.Context, in *postpb.NoArgs) (*postpb.User
 	if err != nil {
 		return nil, err
 	}
+	log.Println("up  in GetAllPosts =", up)
 	return &up, nil
 }
 
 func IncrementPostId() int32 {
-	return int32(len(up.Posts) + 1)
+	postDB, _ := GetPostDB(up)
+
+	return int32(len(postDB.Posts) + 1)
 }
