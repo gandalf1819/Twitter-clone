@@ -130,7 +130,8 @@ Use the same port that is defined in the runBackendServer.sh file.
 
 Launch the post, user and auth services with the help of shell scripts file defined in the respective services folder.
 
-To start the raft cluster, go to raft folder and run goreman start
+To start the raft cluster, go to raft folder and run goreman start.
+
 ---
 
 
