@@ -1,10 +1,11 @@
 package test
 
 import (
-	"../postpb"
 	"context"
 	"log"
+	"mini-twitter/services/post/postpb"
 	"testing"
+	"time"
 )
 
 func TestAddPost(t *testing.T) {
@@ -24,6 +25,8 @@ func TestAddPost(t *testing.T) {
 	}
 	postsMap["Yuvraj"] = 0
 
+	time.Sleep(1 * time.Second)
+
 	//Nikhil adds status
 	userPost = &postpb.PostText{
 		UserId: int32(1),
@@ -35,6 +38,8 @@ func TestAddPost(t *testing.T) {
 		return
 	}
 	postsMap["Nikhil"] = 0
+
+	time.Sleep(1 * time.Second)
 
 	//Chinmay adds status
 	userPost = &postpb.PostText{
@@ -48,14 +53,17 @@ func TestAddPost(t *testing.T) {
 	}
 	postsMap["Chinmay"] = 0
 
+	time.Sleep(1 * time.Second)
+
 	var allPosts *postpb.UserPosts
 	allPosts, err = pc.PostDB.GetAllPosts(context.Background(), &postpb.NoArgs{})
 	if err != nil {
 		log.Println("Error received from UserPost Service =", err)
 		return
 	}
-
+	log.Println("allPosts before forloop=", allPosts)
 	for _, value := range allPosts.Posts {
+		log.Println("allPosts =", allPosts)
 		if value.UserId == 1 {
 			postsMap["Nikhil"] = 1
 		} else if value.UserId == 2 {
@@ -71,5 +79,5 @@ func TestAddPost(t *testing.T) {
 		}
 
 	}
-	log.Println("TestRegister Test Passed")
+	log.Println("TestAddPost Test Passed")
 }

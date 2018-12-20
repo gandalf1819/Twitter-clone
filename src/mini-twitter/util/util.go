@@ -33,7 +33,7 @@ func RaftAPICall(ctx context.Context, method string, url string, payload *string
 	case <-time.After(100 * time.Nanosecond):
 		log.Println("Time exceeded so calling Raft server", url)
 	case <-ctx.Done():
-		log.Println(ctx.Err())
+		log.Println("Error in context url=", url, "method =", method, " error =", ctx.Err())
 		mux.Unlock()
 		return
 
@@ -48,12 +48,12 @@ func RaftAPICall(ctx context.Context, method string, url string, payload *string
 		return
 	}
 
-	log.Println("res =", res)
+	//log.Println("res =", res)
 	mux.Unlock()
 
 	responseChannel <- res
 
-	log.Println("after channel is finished =", url)
+	//log.Println("after channel is finished =", url)
 }
 
 func InteractWithRaftStorage(method string, key string, value interface{}) (string, error) {
@@ -84,6 +84,7 @@ func InteractWithRaftStorage(method string, key string, value interface{}) (stri
 		if value != nil {
 			payload = strings.NewReader(payloadValue)
 		}
+		log.Println("payload =", payload)
 		url := "http://127.0.0.1:" + port + "/" + key
 
 		go RaftAPICall(ctx, method, url, payload, responseChannel)

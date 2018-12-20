@@ -1,9 +1,9 @@
 package test
 
 import (
-	"../postpb"
 	"google.golang.org/grpc"
 	"log"
+	"mini-twitter/services/post/postpb"
 	"os"
 )
 
