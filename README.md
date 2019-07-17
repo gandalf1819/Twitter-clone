@@ -126,5 +126,5 @@ Launch the post, user and auth services with the help of shell scripts file defi
 To start the raft cluster, go to raft folder and run goreman start.
 
 ## Team
-* Nikhil Nar (ncn251)
-* Chinmay Wyawahare (cnw282)
+* [Nikhil Nar](https://github.com/NikhilNar) (ncn251)
+* [Chinmay Wyawahare](https://github.com/gandalf1819) (cnw282)
