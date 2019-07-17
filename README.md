@@ -1,9 +1,8 @@
 ## Webber
----
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 Webber is a simple web application, comprised of a web server written in Go. 
-
----
 
 ## Features
 
@@ -14,8 +13,6 @@ Webber provides the following features in the application.
 3. Users can follow or unfollow other users.
 4. Users can create posts that are associated with their profile.
 5. Users can view posts of the users who they follow on their news feed.
-
----
 
 ## Project Schema
 
@@ -93,8 +90,6 @@ Webber
 		|--server.go --> build target (the code that actually runs the server)
 	|-- runBackendServer.sh --> port specifications and command to start the server
 
----
-
 ### RAFT Implementation
 
 Raft is a distributed consensus algorithm. It solves the problem of getting multiple servers to agree on a shared state even in the face of failures. The shared status is usually a data structure supported by a replicated log. We need the system to be fully operational as long as a majority of the servers are up.
@@ -111,8 +106,6 @@ Raft decomposes consensus into three sub-problems:
 
 * Safety: 
 	If one of the servers has committed a log entry at a particular index, no other server can apply a different log entry for that index.
-
----
 
 ## Running the application
 
@@ -131,9 +124,6 @@ Use the same port that is defined in the runBackendServer.sh file.
 Launch the post, user and auth services with the help of shell scripts file defined in the respective services folder.
 
 To start the raft cluster, go to raft folder and run goreman start.
-
----
-
 
 ## Team
 * Nikhil Nar (ncn251)
